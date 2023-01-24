@@ -11,7 +11,6 @@ import {
   import { getProgram } from "./utils";
   
   // USDT
-  const mintToken = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
   const marketsStatus = MarketStatus.Open;
   
 
@@ -30,13 +29,13 @@ export const getMarketOutcomePriceData = async (
     };
 
       
-export const getMarkets = async () => {
+export const getMarkets = async (token: string) => {
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
     const marketsResponse: ClientResponse<MarketAccounts> =
         await getMarketAccountsByStatusAndMintAccount(
         program,
         marketsStatus,
-        new PublicKey(mintToken)
+        new PublicKey(token)
         );
     console.log(marketsResponse)
     const marketsData: any[] = [];
@@ -56,7 +55,6 @@ export const getMarkets = async () => {
             market: marketsWithOutcomes[i],
             prices: marketPricesData,
         };
-        console.log("marketData!!!", marketData);
         marketsData.push(marketData);
         }
     }

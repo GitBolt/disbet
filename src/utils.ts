@@ -30,6 +30,9 @@ export function logResponse(response: ClientResponse<{}>) {
     }
 }
 
+export const getKeyByValue = (object: any, value: any) => {
+    return Object.keys(object).find(key => object[key] === value);
+}
 
 export function marketStatusFromString(status: string) {
     switch (status) {
