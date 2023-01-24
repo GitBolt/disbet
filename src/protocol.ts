@@ -14,7 +14,6 @@ import { BN, Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { Message, MessageEmbed } from "discord.js";
 import { TOKENLIST } from "./constants";
-import { Bet } from "./types";
 import { getKeyByValue, getProgram } from "./utils";
 
 const marketsStatus = MarketStatus.Open;
@@ -27,7 +26,8 @@ export const getMarketOutcomePriceData = async (
     let marketPricesResponse: ClientResponse<MarketPricesAndPendingOrders> =
         await getMarketPrices(program, marketPk);
     if (marketPricesResponse.success && marketPricesResponse.data) {
-        return getBestMarketOutcomeWithOdd(marketPricesResponse.data);
+        const moreData = getBestMarketOutcomeWithOdd(marketPricesResponse.data);
+        return moreData
     }
     return null;
 };
@@ -140,10 +140,16 @@ export const placeBet = async (
 ) => {
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
     const mintInfo = await getMintInfo(program, marketData.marketData.account.mintAccount)
-    console.log("Token Mint Decimals ", mintInfo.data.decimals)
-    try {
+    const stakeInteger = new BN(amount * 10 ** mintInfo.data.decimals);
 
-        const stakeInteger = new BN(amount * 10 ** mintInfo.data.decimals);
+    console.log(
+        marketPk,
+        marketData.prices.marketOutcomeIndex,
+        type == "for" ? true : false,
+        marketData.prices.forOutcomePrice,
+        stakeInteger
+    )
+    try {
         const createOrderResponse = await createOrder(
             program,
             new PublicKey(marketPk),
@@ -152,8 +158,8 @@ export const placeBet = async (
             marketData.prices.forOutcomePrice,
             stakeInteger
         );
-        console.log(createOrderResponse);
+        console.log("Create order response: ", createOrderResponse);
     } catch (e) {
-        console.error(e);
+        console.error("Error: ", e);
     }
 };

@@ -7,7 +7,7 @@ import {
 
 } from 'discord.js'
 
-import { getMarketOutcomePriceData, getMarkets, placeBet } from './service';
+import { getMarketOutcomePriceData, getMarkets, placeBet } from './protocol';
 import { EMOJIS, TOKENLIST } from './constants';
 import { getKeyByValue, getProgram } from './utils';
 import { PublicKey } from '@solana/web3.js';
@@ -75,12 +75,12 @@ client.on("message", async (message) => {
 
     res = await placeBet(new PublicKey(pubKey), type.toLowerCase(), Number(amount), allMarketData)
 
-    console.log(res)
+    console.log("Bet Response: ", res)
 
     const embed = new MessageEmbed();
     embed
       .setTitle(`Successfully Placed Bet`)
-      .setURL('https://solscan.io/tx/aa')
+      // .setURL('https://solscan.io/tx/aa')
       .setColor('#0099ff')
       .addField('Event', `**${allMarketData.prices.marketOutcome}** vs **${allMarketData.prices.marketOutcomeAgainst}**`)
       .addField("Bet Type", type.toUpperCase())
