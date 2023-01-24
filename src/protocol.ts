@@ -5,9 +5,7 @@ import {
     ClientResponse,
     MarketAccounts,
     MarketPricesAndPendingOrders,
-    MarketOutcomes,
     createOrder,
-    getMarket,
     getMintInfo,
 } from "@monaco-protocol/client";
 import { BN, Program } from "@project-serum/anchor";
@@ -49,6 +47,7 @@ export const getMarkets = async (token: string, message: Message) => {
         .setTimestamp()
     message.edit({ embeds: [embed] });
     if (marketsResponse.success && marketsResponse.data?.markets?.length) {
+
         //Only get an open market with a non-zero marketOutcomesCount
         const marketsWithOutcomes = marketsResponse.data.markets.filter(
             (market) => market.account.marketOutcomesCount > 0
@@ -64,7 +63,11 @@ export const getMarkets = async (token: string, message: Message) => {
                 market: marketsWithOutcomes[i],
                 prices: marketPricesData,
             };
-            embed.addField(`${marketData.prices.marketOutcome} vs ${marketData.prices.marketOutcomeAgainst}`, `[For Outcome Price: **${marketData.prices.forOutcomePrice}** | Against Outcome Price: **${marketData.prices.againstOutcomePrice}**](https://solscan.io/account/${marketData.pk})`);
+            const formattedString = `For Outcome Price: \`${marketData.prices.forOutcomePrice}\`\nTo Outcome Price: \`${marketData.prices.againstOutcomePrice}\`\nAddress: \`${marketData.pk}\`\n[View on Solscan](https://solscan.io/account/${marketData.pk})`;
+            embed.addField(
+                `${marketData.prices.marketOutcome} vs ${marketData.prices.marketOutcomeAgainst}`,
+                formattedString
+            )
             await message.edit({ embeds: [embed] });
         }
     } else {

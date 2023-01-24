@@ -44,7 +44,7 @@ client.on("message", async (message) => {
   } else if (message.content.startsWith("!placebet")) {
     const args: string[] = message.content.split(" ")
     if (args.length < 2) {
-      await message.channel.send("You must specify the market public key and amount for betting")
+      await message.channel.send("You must specify the __market public key__ and __amount__ for betting")
       return
     }
 
@@ -85,22 +85,23 @@ client.on("message", async (message) => {
         .setTitle(`Successfully Placed Bet`)
         .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
         .setColor('#0099ff')
-        .addField('Event', `**${allMarketData.prices.marketOutcome}** vs **${allMarketData.prices.marketOutcomeAgainst}**`)
+        .addField('Event', `__${allMarketData.prices.marketOutcome}__ vs __${allMarketData.prices.marketOutcomeAgainst}__`)
         .addField("Bet Type", type.toUpperCase())
-        .addField("Amount", amount)
+        .addField("Amount", `${amount} USDT`)
+
       await message.channel.send({
         embeds: [embed]
       })
     } else {
-      await message.channel.send("Error placing bet:" + "```" + res.errors[0].toString() + "```")
+      await message.channel.send("Following error placing bet:" + "```" + res.errors[0].toString() + "```")
     }
 
 
-    await infoMessage.edit("Done")
+    await infoMessage.delete()
   } else if (message.content.startsWith('!mybets')) {
     const args = message.content.split(" ")
     if (args.length < 2) {
-      await message.channel.send("You must specify the market public key to view all bets on that")
+      await message.channel.send("You must specify the __market public key__ to view all bets on that")
       return
     }
 
@@ -110,6 +111,7 @@ client.on("message", async (message) => {
       .fetch();
     const accs = betOrdersResponse.data.orderAccounts
 
+    const infoMessage = await message.channel.send("Fetching your bets...")
     const embed = new MessageEmbed()
       .setTitle("Your Bets")
       .setDescription(`These are your bets for ${args[1]}`)
@@ -117,30 +119,35 @@ client.on("message", async (message) => {
 
 
     accs.forEach((acc) => {
+      const formattedString = `Stake: \`${parseProtocolNumber(acc.account.stake)}\`\nOdds: \`${acc.account.expectedPrice}\`\nStake Unmatched: \`${parseProtocolNumber(acc.account.stakeUnmatched) === 0}\`\nAddress: \`${acc.publicKey.toBase58()}\`\n[View on Solscan](https://solscan.io/account/${acc.publicKey.toBase58()})`;
       embed.addField(
         `Bet Type: ${acc.account.forOutcome ? "FOR" : "AGAINST"}`,
-        `[Stake: **${parseProtocolNumber(acc.account.stake)}** | Odds: **${acc.account.expectedPrice}** | Stake Unmatched: ${parseProtocolNumber(acc.account.stakeUnmatched) === 0}](https://solscan.io/account/${acc.publicKey.toBase58()})`
-
+        formattedString,
       )
     })
     await message.channel.send({ embeds: [embed] })
+    await infoMessage.delete()
   } else if (message.content.startsWith('!cancelbet')) {
     const args = message.content.split(" ")
     if (args.length < 2) {
       await message.channel.send("You must enter bet public key")
       return
     }
+    const infoMessage = await message.channel.send("Processing...")
     try {
       const res = await cancelOrder(program, new PublicKey(args[1]))
+      console.log(res)
       if (res.success) {
         await message.channel.send("Successfully cancelled bet")
-      } else {
+      } else if (res.errors[0].toString().includes("Order is not cancellable")) {
         await message.channel.send("Bet is uncancelable as stake is matched")
+      } else {
+        await message.channel.send("```" + res.errors[0] + "```")
       }
     } catch (e: any) {
       console.log(e.toString())
     }
-
+    await infoMessage.delete()
   }
 
 });
