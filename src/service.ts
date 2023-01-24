@@ -168,7 +168,7 @@ export const placeBetAgainst = async (
             program,
             new PublicKey(marketPk),
             marketData.priceData.marketOutcomeIndex,
-            marketData.priceData.forOutcomePrice,
+            marketData.priceData.againstOutcomePrice,
             2,
             stakeInteger
         );
