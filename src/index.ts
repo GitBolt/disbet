@@ -9,11 +9,12 @@ import {
 
 import { getMarketOutcomePriceData, getMarkets, placeBet } from './protocol';
 import { EMOJIS, TOKENLIST } from './constants';
-import { getKeyByValue, getProgram } from './utils';
+import { getKeyByValue, getProgram, parseProtocolNumber } from './utils';
 import { PublicKey } from '@solana/web3.js';
-import { getMarket } from '@monaco-protocol/client';
+import { getMarket, Orders, cancelOrder } from '@monaco-protocol/client';
 
 dotenv.config()
+
 
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS],
@@ -28,6 +29,7 @@ client.once('ready', async () => {
 
 
 client.on("message", async (message) => {
+  const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
   if (message.content.startsWith("!markets")) {
     const args: string[] = message.content.split(" ")
 
@@ -59,7 +61,6 @@ client.on("message", async (message) => {
     let res: any
 
 
-    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
 
     let marketPricesData = await getMarketOutcomePriceData(program, new PublicKey(pubKey));
     const marketData = await getMarket(program, new PublicKey(pubKey))
@@ -91,6 +92,50 @@ client.on("message", async (message) => {
     })
 
     await infoMessage.edit("Done")
+  } else if (message.content.startsWith('!mybets')) {
+    const args = message.content.split(" ")
+    if (args.length < 2) {
+      await message.channel.send("You must specify the market public key to view all bets on that")
+      return
+    }
+
+    const betOrdersResponse = await new Orders(program)
+      .filterByMarket(new PublicKey(args[1]))
+      .filterByPurchaser(new PublicKey('94pkPrDj6mBYPyJyUmtLmKoxLq6kzLmKaKbhrc9sQqCN'))
+      .fetch();
+    const accs = betOrdersResponse.data.orderAccounts
+
+    const embed = new MessageEmbed()
+      .setTitle("Your Bets")
+      .setDescription(`These are your bets for ${args[1]}`)
+      .setColor('#0099ff')
+
+
+    accs.forEach((acc) => {
+      embed.addField(
+        `Bet Type: ${acc.account.forOutcome ? "FOR" : "AGAINST"}`,
+        `[Stake: **${parseProtocolNumber(acc.account.stake)}** | Odds: **${acc.account.expectedPrice}** | Stake Unmatched: ${parseProtocolNumber(acc.account.stakeUnmatched) === 0}](https://solscan.io/account/${acc.publicKey.toBase58()})`
+
+      )
+    })
+    await message.channel.send({ embeds: [embed] })
+  } else if (message.content.startsWith('!cancelbet')) {
+    const args = message.content.split(" ")
+    if (args.length < 2) {
+      await message.channel.send("You must enter bet public key")
+      return
+    }
+    try {
+      const res = await cancelOrder(program, new PublicKey(args[1]))
+      if (res.success){
+        await message.channel.send("Successfully cancelled bet")
+      } else {
+        await message.channel.send("Bet is uncancelable as stake is matched")
+      }
+    } catch (e: any) {
+      console.log(e.toString())
+    }
+
   }
 
 });
