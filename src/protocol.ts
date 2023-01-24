@@ -158,7 +158,7 @@ export const placeBet = async (
             marketData.prices.forOutcomePrice,
             stakeInteger
         );
-        console.log("Create order response: ", createOrderResponse);
+        return createOrderResponse
     } catch (e) {
         console.error("Error: ", e);
     }

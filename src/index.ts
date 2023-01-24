@@ -78,18 +78,23 @@ client.on("message", async (message) => {
 
     console.log("Bet Response: ", res)
 
-    const embed = new MessageEmbed();
-    embed
-      .setTitle(`Successfully Placed Bet`)
-      // .setURL('https://solscan.io/tx/aa')
-      .setColor('#0099ff')
-      .addField('Event', `**${allMarketData.prices.marketOutcome}** vs **${allMarketData.prices.marketOutcomeAgainst}**`)
-      .addField("Bet Type", type.toUpperCase())
-      .addField("Amount", amount)
 
-    await message.channel.send({
-      embeds: [embed]
-    })
+    if (res.success) {
+      const embed = new MessageEmbed();
+      embed
+        .setTitle(`Successfully Placed Bet`)
+        .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
+        .setColor('#0099ff')
+        .addField('Event', `**${allMarketData.prices.marketOutcome}** vs **${allMarketData.prices.marketOutcomeAgainst}**`)
+        .addField("Bet Type", type.toUpperCase())
+        .addField("Amount", amount)
+      await message.channel.send({
+        embeds: [embed]
+      })
+    } else {
+      await message.channel.send("Error placing bet:" + "```" + res.errors[0].toString() + "```")
+    }
+
 
     await infoMessage.edit("Done")
   } else if (message.content.startsWith('!mybets')) {
@@ -127,7 +132,7 @@ client.on("message", async (message) => {
     }
     try {
       const res = await cancelOrder(program, new PublicKey(args[1]))
-      if (res.success){
+      if (res.success) {
         await message.channel.send("Successfully cancelled bet")
       } else {
         await message.channel.send("Bet is uncancelable as stake is matched")
