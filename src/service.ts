@@ -6,11 +6,13 @@ import {
     MarketAccounts,
     MarketPricesAndPendingOrders,
     MarketOutcomes,
+    createOrder,
 } from "@monaco-protocol/client";
-import { Program } from "@project-serum/anchor";
+import { BN, Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { Message, MessageEmbed } from "discord.js";
 import { TOKENLIST } from "./constants";
+import { Bet } from "./types";
 import { getKeyByValue, getProgram } from "./utils";
 
 const marketsStatus = MarketStatus.Open;
@@ -64,7 +66,7 @@ export const getMarkets = async (token: string, message: Message) => {
             await message.edit({ embeds: [embed] });
         }
     } else {
-     await message.edit({embeds: [embed.setDescription('No markets found')]})   
+        await message.edit({ embeds: [embed.setDescription('No markets found')] })
     }
     await message.edit({ embeds: [embed], content: "Done!" })
 };
@@ -125,4 +127,53 @@ const getBestMarketOutcomeWithOdd = (
         }
     }
     return null;
+};
+
+
+export const placeBetFor = async (
+    marketPk: PublicKey,
+    amount: number,
+    marketData: any,
+) => {
+    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
+    try {
+
+        const stakeInteger = new BN(amount * 10 ** 6);
+        const createOrderResponse = await createOrder(
+            program,
+            new PublicKey(marketPk),
+            marketData.priceData.marketOutcomeIndex,
+            marketData.priceData.forOutcomePrice,
+            2,
+            stakeInteger
+        );
+        console.log(createOrderResponse);
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+export const placeBetAgainst = async (
+    marketPk: PublicKey,
+    amount: number,
+    marketData: any,
+) => {
+    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
+    const priceData = await getMarketOutcomePriceData(program, marketPk)
+    if (!priceData) return null
+    try {
+
+        const stakeInteger = new BN(amount * 10 ** 6);
+        const createOrderResponse = await createOrder(
+            program,
+            new PublicKey(marketPk),
+            marketData.priceData.marketOutcomeIndex,
+            marketData.priceData.forOutcomePrice,
+            2,
+            stakeInteger
+        );
+        console.log(createOrderResponse);
+    } catch (e) {
+        console.error(e);
+    }
 };
