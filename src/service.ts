@@ -142,8 +142,8 @@ export const placeBetFor = async (
         const createOrderResponse = await createOrder(
             program,
             new PublicKey(marketPk),
-            marketData.priceData.marketOutcomeIndex,
-            marketData.priceData.forOutcomePrice,
+            marketData.prices.marketOutcomeIndex,
+            marketData.prices.forOutcomePrice,
             2,
             stakeInteger
         );
@@ -161,14 +161,15 @@ export const placeBetAgainst = async (
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
     const priceData = await getMarketOutcomePriceData(program, marketPk)
     if (!priceData) return null
+    console.log("a", priceData)
     try {
 
         const stakeInteger = new BN(amount * 10 ** 6);
         const createOrderResponse = await createOrder(
             program,
             new PublicKey(marketPk),
-            marketData.priceData.marketOutcomeIndex,
-            marketData.priceData.againstOutcomePrice,
+            marketData.prices.marketOutcomeIndex,
+            marketData.prices.againstOutcomePrice,
             2,
             stakeInteger
         );
