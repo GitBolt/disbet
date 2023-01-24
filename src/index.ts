@@ -84,7 +84,7 @@ client.on("message", async (message) => {
       embed
         .setTitle(`Successfully Placed Bet`)
         .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
-        .setColor('#0099ff')
+        .setColor('#00ff1e')
         .addField('Event', `__${allMarketData.prices.marketOutcome}__ vs __${allMarketData.prices.marketOutcomeAgainst}__`)
         .addField("Bet Type", type.toUpperCase())
         .addField("Amount", `${amount} USDT`)
@@ -107,15 +107,15 @@ client.on("message", async (message) => {
 
     const betOrdersResponse = await new Orders(program)
       .filterByMarket(new PublicKey(args[1]))
-      .filterByPurchaser(new PublicKey('94pkPrDj6mBYPyJyUmtLmKoxLq6kzLmKaKbhrc9sQqCN'))
+      .filterByPurchaser(new PublicKey('AoVdX5T9cTGqWKyhDNxNMqhkkuh4xEeVNZ2pFdaeKa64'))
       .fetch();
     const accs = betOrdersResponse.data.orderAccounts
 
     const infoMessage = await message.channel.send("Fetching your bets...")
     const embed = new MessageEmbed()
       .setTitle("Your Bets")
-      .setDescription(`These are your bets for ${args[1]}`)
-      .setColor('#0099ff')
+      .setDescription(`These are your bets for account \`${args[1]}\``)
+      .setColor('#ff0062')
 
 
     accs.forEach((acc) => {
@@ -138,7 +138,13 @@ client.on("message", async (message) => {
       const res = await cancelOrder(program, new PublicKey(args[1]))
       console.log(res)
       if (res.success) {
-        await message.channel.send("Successfully cancelled bet")
+        await message.channel.send({embeds: [
+          new MessageEmbed()
+          .setTitle("Successfully Canceled Bet")
+          .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
+          .setColor('#00ff1e')
+          .addField("Account", "```" + args[1] + "```")
+        ]})
       } else if (res.errors[0].toString().includes("Order is not cancellable")) {
         await message.channel.send("Bet is uncancelable as stake is matched")
       } else {

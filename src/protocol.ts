@@ -41,7 +41,7 @@ export const getMarkets = async (token: string, message: Message) => {
         );
 
     const embed = new MessageEmbed();
-    embed.setColor('#0099ff')
+    embed.setColor('#ff0062')
         .setTitle('Market Outcomes')
         .setDescription(`These are the latest market outcomes of **${getKeyByValue(TOKENLIST, token)}**`)
         .setTimestamp()
