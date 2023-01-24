@@ -7,6 +7,8 @@ import {
     MarketPricesAndPendingOrders,
     MarketOutcomes,
     createOrder,
+    getMarket,
+    getMintInfo,
 } from "@monaco-protocol/client";
 import { BN, Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
@@ -21,7 +23,7 @@ export const getMarketOutcomePriceData = async (
     program: Program,
     marketPk: PublicKey
 ) => {
-    console.log("marketPk", marketPk.toString());
+    console.log("Market Public Key", marketPk.toString());
     let marketPricesResponse: ClientResponse<MarketPricesAndPendingOrders> =
         await getMarketPrices(program, marketPk);
     if (marketPricesResponse.success && marketPricesResponse.data) {
@@ -130,47 +132,24 @@ const getBestMarketOutcomeWithOdd = (
 };
 
 
-export const placeBetFor = async (
+export const placeBet = async (
     marketPk: PublicKey,
+    type: "for" | "against",
     amount: number,
     marketData: any,
 ) => {
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
+    const mintInfo = await getMintInfo(program, marketData.marketData.account.mintAccount)
+    console.log("Token Mint Decimals ", mintInfo.data.decimals)
     try {
 
-        const stakeInteger = new BN(amount * 10 ** 6);
+        const stakeInteger = new BN(amount * 10 ** mintInfo.data.decimals);
         const createOrderResponse = await createOrder(
             program,
             new PublicKey(marketPk),
             marketData.prices.marketOutcomeIndex,
+            type == "for" ? true : false,
             marketData.prices.forOutcomePrice,
-            2,
-            stakeInteger
-        );
-        console.log(createOrderResponse);
-    } catch (e) {
-        console.error(e);
-    }
-};
-
-export const placeBetAgainst = async (
-    marketPk: PublicKey,
-    amount: number,
-    marketData: any,
-) => {
-    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
-    const priceData = await getMarketOutcomePriceData(program, marketPk)
-    if (!priceData) return null
-    console.log("a", priceData)
-    try {
-
-        const stakeInteger = new BN(amount * 10 ** 6);
-        const createOrderResponse = await createOrder(
-            program,
-            new PublicKey(marketPk),
-            marketData.prices.marketOutcomeIndex,
-            marketData.prices.againstOutcomePrice,
-            2,
             stakeInteger
         );
         console.log(createOrderResponse);

@@ -7,10 +7,11 @@ import {
 
 } from 'discord.js'
 
-import { getMarketOutcomePriceData, getMarkets, placeBetAgainst, placeBetFor } from './service';
+import { getMarketOutcomePriceData, getMarkets, placeBet } from './service';
 import { EMOJIS, TOKENLIST } from './constants';
 import { getKeyByValue, getProgram } from './utils';
 import { PublicKey } from '@solana/web3.js';
+import { getMarket } from '@monaco-protocol/client';
 
 dotenv.config()
 
@@ -47,30 +48,33 @@ client.on("message", async (message) => {
 
     const infoMessage = await message.channel.send("Executing order...")
 
-    const type = args[1]
+    const type: any = args[1]
     const pubKey = args[2]
     const amount = args[3]
 
+    if (!["for", "against"].includes(type)) {
+      await message.channel.send("Bet must be **against* or **for**")
+      return
+    }
     let res: any
 
-    
+
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
 
     let marketPricesData = await getMarketOutcomePriceData(program, new PublicKey(pubKey));
+    const marketData = await getMarket(program, new PublicKey(pubKey))
 
-    if (!marketPricesData) {
-      await message.channel.send("Price data not found")
+    if (!marketPricesData || !marketData.success) {
+      await message.channel.send("Error finding data")
       return
     }
-    const marketData = {
+    const allMarketData = {
       prices: marketPricesData,
+      marketData: marketData.data
     };
 
-    if (type.toLowerCase() == "for") {
-      res = await placeBetFor(new PublicKey(pubKey), Number(amount), marketData)
-    } else {
-      res = await placeBetAgainst(new PublicKey(pubKey), Number(amount), marketData)
-    }
+    res = await placeBet(new PublicKey(pubKey), type.toLowerCase(), Number(amount), allMarketData)
+
     console.log(res)
 
     const embed = new MessageEmbed();
@@ -78,7 +82,7 @@ client.on("message", async (message) => {
       .setTitle(`Successfully Placed Bet`)
       .setURL('https://solscan.io/tx/aa')
       .setColor('#0099ff')
-      .addField('Event', `**${marketData.prices.marketOutcome}** vs **${marketData.prices.marketOutcomeAgainst}**`)
+      .addField('Event', `**${allMarketData.prices.marketOutcome}** vs **${allMarketData.prices.marketOutcomeAgainst}**`)
       .addField("Bet Type", type.toUpperCase())
       .addField("Amount", amount)
 
