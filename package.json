@@ -25,6 +25,7 @@
 		"dotenv": "^10.0.0",
 		"ed25519-hd-key": "^1.3.0",
 		"image-data-uri": "^2.0.1",
+		"mongoose": "^6.8.4",
 		"node-fetch": "2.6.1",
 		"nodemailer": "^6.7.0",
 		"nodemon": "^2.0.14",
