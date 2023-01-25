@@ -48,14 +48,17 @@ export const getMarkets = async (token: string, message: Message) => {
     message.edit({ embeds: [embed] });
     if (marketsResponse.success && marketsResponse.data?.markets?.length) {
 
+        const currentTime = +new Date() / 1000
+
         const marketsWithOutcomes = marketsResponse.data.markets.filter(
             (market) => market.account.marketOutcomesCount > 0
-        ).filter((market) => market.account.marketLockTimestamp.toNumber() > new Date())
+        ).filter((market) => market.account.marketLockTimestamp.toNumber() > currentTime)
 
         for (let i = 0; i < marketsWithOutcomes.length; i++) {
             let marketPk = marketsWithOutcomes[i].publicKey;
             let marketPricesData = await getMarketOutcomePriceData(program, marketPk);
             if (!marketPricesData) {
+                console.log("No data: ", marketPk.toBase58())
                 continue;
             }
             const marketData = {
