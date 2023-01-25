@@ -139,13 +139,15 @@ client.on("message", async (message) => {
       const res = await cancelOrder(program, new PublicKey(args[1]))
       console.log(res)
       if (res.success) {
-        await message.channel.send({embeds: [
-          new MessageEmbed()
-          .setTitle("Successfully Canceled Bet")
-          .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
-          .setColor('#00ff1e')
-          .addField("Account", "```" + args[1] + "```")
-        ]})
+        await message.channel.send({
+          embeds: [
+            new MessageEmbed()
+              .setTitle("Successfully Canceled Bet")
+              .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
+              .setColor('#00ff1e')
+              .addField("Account", "```" + args[1] + "```")
+          ]
+        })
       } else if (res.errors[0].toString().includes("Order is not cancellable")) {
         await message.channel.send("Bet is uncancelable as stake is matched")
       } else {

@@ -48,7 +48,7 @@ export const getMarkets = async (token: string, message: Message) => {
     message.edit({ embeds: [embed] });
     if (marketsResponse.success && marketsResponse.data?.markets?.length) {
 
-        //Only get an open market with a non-zero marketOutcomesCount
+        // Only get an open market with a non-zero marketOutcomesCount
         const marketsWithOutcomes = marketsResponse.data.markets.filter(
             (market) => market.account.marketOutcomesCount > 0
         );
