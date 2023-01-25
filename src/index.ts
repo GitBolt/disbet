@@ -85,9 +85,10 @@ client.on("message", async (message) => {
         .setTitle(`Successfully Placed Bet`)
         .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
         .setColor('#00ff1e')
-        .addField('Event', `__${allMarketData.prices.marketOutcome}__ vs __${allMarketData.prices.marketOutcomeAgainst}__`)
+        .addField('Event', `*${allMarketData.prices.marketOutcome}* vs *${allMarketData.prices.marketOutcomeAgainst}*`)
         .addField("Bet Type", type.toUpperCase())
         .addField("Amount", `${amount} USDT`)
+        .addField("Market Address", "```" + pubKey + "```")
 
       await message.channel.send({
         embeds: [embed]
