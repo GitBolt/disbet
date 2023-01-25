@@ -14,7 +14,6 @@ import { Message, MessageEmbed } from "discord.js";
 import { TOKENLIST } from "./constants";
 import { getKeyByValue, getProgram } from "./utils";
 
-const marketsStatus = MarketStatus.Open;
 
 export const getMarketOutcomePriceData = async (
     program: Program,
@@ -30,6 +29,7 @@ export const getMarketOutcomePriceData = async (
     return null;
 };
 
+const marketsStatus = MarketStatus.Open;
 
 export const getMarkets = async (token: string, message: Message) => {
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
@@ -48,10 +48,10 @@ export const getMarkets = async (token: string, message: Message) => {
     message.edit({ embeds: [embed] });
     if (marketsResponse.success && marketsResponse.data?.markets?.length) {
 
-        // Only get an open market with a non-zero marketOutcomesCount
         const marketsWithOutcomes = marketsResponse.data.markets.filter(
             (market) => market.account.marketOutcomesCount > 0
-        );
+        ).filter((market) => market.account.marketLockTimestamp.toNumber() > new Date())
+
         for (let i = 0; i < marketsWithOutcomes.length; i++) {
             let marketPk = marketsWithOutcomes[i].publicKey;
             let marketPricesData = await getMarketOutcomePriceData(program, marketPk);
