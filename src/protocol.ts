@@ -11,7 +11,7 @@ import {
 } from "@monaco-protocol/client";
 import { BN, Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { Message, EmbedBuilder, ChatInputCommandInteraction } from "discord.js";
+import { EmbedBuilder, ChatInputCommandInteraction } from "discord.js";
 import { TOKENLIST } from "./constants";
 import { getKeyByValue, getProgram } from "./utils";
 
