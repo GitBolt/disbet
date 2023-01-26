@@ -1,5 +1,15 @@
+import { ColorResolvable } from "discord.js"
+
 export const EMOJIS = {
-    loading: '<a:Loading:854065859667165235>'
+    loading: '<a:Loading:854065859667165235>',
+    sol: '<:sol:1068303727234125824>',
+}
+
+export const COLORS: { [key: string]: ColorResolvable } = {
+    default: "#fc036f",
+    success: "#20fc03",
+    error: "#fc0303",
+    warning: "#fc8403"
 }
 
 export const TOKENLIST: {
@@ -17,3 +27,5 @@ export const TOKENLIST: {
     FIDA: 'EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp',
     ORCA: 'orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE'
 }
+
+export const TOKENLISTURL = "https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json"

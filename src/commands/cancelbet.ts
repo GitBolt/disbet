@@ -1,6 +1,7 @@
 import { cancelOrder } from '@monaco-protocol/client';
 import { PublicKey } from '@solana/web3.js';
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { COLORS } from '../constants';
 import { getProgram } from '../utils';
 
 module.exports = {
@@ -29,7 +30,7 @@ module.exports = {
           new EmbedBuilder()
             .setTitle("Successfully Canceled Bet")
             .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
-            .setColor('#00ff1e')
+            .setColor(COLORS.success)
             .addFields({ name: "Account", value: "```" + bet_address + "```" })
         ]
       })

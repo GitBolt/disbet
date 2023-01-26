@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from '
 import { generateKeyPair } from '../crypto/keypair';
 import { Wallet } from '../schema/wallet';
 import { encrypt } from '../crypto/encrypt'
+import { COLORS } from '../constants';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -37,6 +38,7 @@ module.exports = {
 
         const successEmbed = new EmbedBuilder()
           .setTitle("Betting wallet created successfully")
+          .setColor(COLORS.success)
           .setFields(
             {
               name: "Public Key",

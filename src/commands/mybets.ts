@@ -1,6 +1,7 @@
 import { Orders } from '@monaco-protocol/client';
 import { PublicKey } from '@solana/web3.js';
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { COLORS } from '../constants';
 import { Wallet } from '../schema/wallet';
 import { getProgram, parseProtocolNumber } from '../utils';
 
@@ -45,7 +46,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle("Your Bets")
       .setDescription(`These are your bets for account: \`\`\`${market_address}\`\`\``)
-      .setColor('#ff0062')
+      .setColor(COLORS.default)
 
     if (!accs.length) {
       embed.setDescription("No bets found")

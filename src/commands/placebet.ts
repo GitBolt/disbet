@@ -1,4 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { COLORS } from '../constants';
 import { placeBet } from '../protocol';
 import { askPassword } from '../utils/askPassword';
 
@@ -49,7 +50,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle(`Successfully Placed Bet`)
         .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
-        .setColor('#00ff1e')
+        .setColor(COLORS.success)
         .addFields(
           { name: "Event", value: `${res!.marketPricesData!.marketOutcome} * vs * ${res!.marketPricesData!.marketOutcomeAgainst}` },
           { name: "Bet Type", value: args.getString("type", true).toUpperCase() },
