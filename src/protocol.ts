@@ -7,6 +7,7 @@ import {
     MarketPricesAndPendingOrders,
     createOrder,
     getMintInfo,
+    getMarket,
 } from "@monaco-protocol/client";
 import { BN, Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
@@ -47,7 +48,7 @@ export const getMarkets = async (token: string, interaction: ChatInputCommandInt
         .setTitle('Market Outcomes')
         .setDescription(`These are the latest market outcomes of **${getKeyByValue(TOKENLIST, token)}**`)
         .setTimestamp()
-    
+
     console.log("Market Response: ", marketsResponse.success)
     await interaction.editReply({ embeds: [embed], content: "Loading..." });
     if (marketsResponse.success && marketsResponse.data?.markets?.length) {
@@ -80,7 +81,7 @@ export const getMarkets = async (token: string, interaction: ChatInputCommandInt
             await interaction.editReply({ embeds: [embed], content: "Loading..." });
         }
     } else {
-        await interaction.editReply({ embeds: [embed.setDescription('Looks empty in here')], content:"No markets found" })
+        await interaction.editReply({ embeds: [embed.setDescription('Looks empty in here')], content: "No markets found" })
     }
     await interaction.editReply({ embeds: [embed], content: "Done!" })
 };
@@ -145,33 +146,33 @@ const getBestMarketOutcomeWithOdd = (
 
 
 export const placeBet = async (
-    marketPk: PublicKey,
+    marketPk: string,
     type: "for" | "against",
     amount: number,
-    marketData: any,
 ) => {
-    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
-    const mintInfo = await getMintInfo(program, marketData.marketData.account.mintAccount)
-    const stakeInteger = new BN(amount * 10 ** mintInfo.data.decimals);
 
-    console.log(
-        marketPk,
-        marketData.prices.marketOutcomeIndex,
-        type == "for" ? true : false,
-        marketData.prices.forOutcomePrice,
-        stakeInteger
-    )
+    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
+
+    const marketData = await getMarket(program, new PublicKey(marketPk))
+    const mintInfo = await getMintInfo(program, marketData.data.account.mintAccount)
+    const stakeInteger = new BN(amount * 10 ** mintInfo.data.decimals);
+    let marketPricesData = await getMarketOutcomePriceData(program, new PublicKey(marketPk));
+
+    if (!marketPricesData || !marketData.success) {
+        return undefined
+    }
+
     try {
         const createOrderResponse = await createOrder(
             program,
             new PublicKey(marketPk),
-            marketData.prices.marketOutcomeIndex,
+            marketPricesData.marketOutcomeIndex,
             type == "for" ? true : false,
-            marketData.prices.forOutcomePrice,
+            marketPricesData.forOutcomePrice,
             stakeInteger
         );
-        return createOrderResponse
-    } catch (e) {
-        console.error("Error: ", e);
+        return { error: false, data: createOrderResponse, market: { marketData, marketPricesData } }
+    } catch (e: any) {
+        return { error: true, data: e.toString() }
     }
 };
