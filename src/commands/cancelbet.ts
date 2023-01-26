@@ -1,7 +1,6 @@
-const { SlashCommandBuilder } = require('discord.js');
 import { cancelOrder } from '@monaco-protocol/client';
 import { PublicKey } from '@solana/web3.js';
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { getProgram } from '../utils';
 
 module.exports = {

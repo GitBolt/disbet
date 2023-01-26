@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-import { ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { EMOJIS, TOKENLIST } from '../constants';
 import { getMarkets } from '../protocol';
 import { getKeyByValue } from '../utils';
@@ -18,7 +17,7 @@ module.exports = {
     let token = TOKENLIST["USDT"]
     const category = interaction.options.getString("category")
     if (category) {
-      token = TOKENLIST[category]
+      token = category
     }
     const tokenName = getKeyByValue(TOKENLIST, token)
     await interaction.reply(`Fetching latest **${tokenName}** market data ${EMOJIS.loading}`)

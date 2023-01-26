@@ -1,7 +1,6 @@
-const { SlashCommandBuilder } = require('discord.js');
 import { Orders } from '@monaco-protocol/client';
 import { PublicKey } from '@solana/web3.js';
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { getProgram, parseProtocolNumber } from '../utils';
 
 module.exports = {

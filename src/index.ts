@@ -1,5 +1,6 @@
 
 import dotenv from 'dotenv'
+import mongoose from 'mongoose';
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
@@ -7,7 +8,7 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 dotenv.config()
 
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages] });
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
@@ -38,4 +39,20 @@ client.on(Events.InteractionCreate, async (interaction: any) => {
   }
 });
 
-client.login(process.env['TOKEN']);
+
+const start = async () => {
+  const db = process.env.MONGO_URL
+  const token = process.env['TOKEN']
+  if (!db || !token) return console.log("Missing MONGO_URL or TOKEN env variable")
+
+  mongoose.connect(db, {
+    keepAlive: true
+  })
+  mongoose.connection.on('error', err => {
+    console.log(err)
+    process.exit(1)
+  })
+  client.login(token);
+}
+
+start()

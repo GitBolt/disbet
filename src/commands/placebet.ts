@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { placeBet } from '../protocol';
 
 module.exports = {
