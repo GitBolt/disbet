@@ -10,7 +10,7 @@ import {
 } from "@monaco-protocol/client";
 import { BN, Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { Message, MessageEmbed } from "discord.js";
+import { Message, EmbedBuilder, ChatInputCommandInteraction } from "discord.js";
 import { TOKENLIST } from "./constants";
 import { getKeyByValue, getProgram } from "./utils";
 
@@ -31,21 +31,25 @@ export const getMarketOutcomePriceData = async (
 
 const marketsStatus = MarketStatus.Open;
 
-export const getMarkets = async (token: string, message: Message) => {
+export const getMarkets = async (token: string, interaction: ChatInputCommandInteraction) => {
+    console.log("Fetching markets...")
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
+
     const marketsResponse: ClientResponse<MarketAccounts> =
         await getMarketAccountsByStatusAndMintAccount(
             program,
             marketsStatus,
             new PublicKey(token)
         );
-
-    const embed = new MessageEmbed();
+    console.log(marketsResponse)
+    const embed = new EmbedBuilder();
     embed.setColor('#ff0062')
         .setTitle('Market Outcomes')
         .setDescription(`These are the latest market outcomes of **${getKeyByValue(TOKENLIST, token)}**`)
         .setTimestamp()
-    message.edit({ embeds: [embed] });
+    
+    console.log("Market Response: ", marketsResponse.success)
+    await interaction.editReply({ embeds: [embed], content: "Loading..." });
     if (marketsResponse.success && marketsResponse.data?.markets?.length) {
 
         const currentTime = +new Date() / 1000
@@ -67,16 +71,18 @@ export const getMarkets = async (token: string, message: Message) => {
                 prices: marketPricesData,
             };
             const formattedString = `For Outcome Price: \`${marketData.prices.forOutcomePrice}\`\nTo Outcome Price: \`${marketData.prices.againstOutcomePrice}\`\nAddress: \`${marketData.pk}\`\n[View on Solscan](https://solscan.io/account/${marketData.pk})`;
-            embed.addField(
-                `${marketData.prices.marketOutcome} vs ${marketData.prices.marketOutcomeAgainst}`,
-                formattedString
+            embed.addFields(
+                {
+                    name: `${marketData.prices.marketOutcome} vs ${marketData.prices.marketOutcomeAgainst}`,
+                    value: formattedString
+                }
             )
-            await message.edit({ embeds: [embed] });
+            await interaction.editReply({ embeds: [embed], content: "Loading..." });
         }
     } else {
-        await message.edit({ embeds: [embed.setDescription('No markets found')] })
+        await interaction.editReply({ embeds: [embed.setDescription('Looks empty in here')], content:"No markets found" })
     }
-    await message.edit({ embeds: [embed], content: "Done!" })
+    await interaction.editReply({ embeds: [embed], content: "Done!" })
 };
 
 
