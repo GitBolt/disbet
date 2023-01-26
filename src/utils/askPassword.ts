@@ -18,7 +18,7 @@ export const askPassword = async (interaction: ChatInputCommandInteraction) => {
         if (!wallet?.privateKey) return
         try {
             const keypair = await decrypt(Buffer.from(wallet.privateKey), Buffer.from(password.content))
-            await interaction.user.send("Authorized!")
+            await interaction.user.send("Authorized! Processing action now...\nYou may go back to the channel to view status.")
             return keypair
         } catch (e) {
             await interaction.user.send("Incorrect password")

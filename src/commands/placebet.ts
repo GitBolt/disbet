@@ -35,28 +35,31 @@ module.exports = {
       args.getNumber("stake_amount", true),
       sk,
     )
-
+    console.log(res)
     if (!res) {
-      await interaction.editReply("Error finding market data")
+      await interaction.followUp(`Error finding market data <@${interaction.user.id}>`)
       return
     }
-    if (res.error) {
-      await interaction.editReply(`Following error occured while placing bet: \`\`\`${res.data}\`\`\`\ `)
+    if (res.data.errors) {
+      await interaction.followUp(`<@${interaction.user.id}> Following error occured while placing bet: \`\`\`${res.data.errors[0]}\`\`\`\ `)
       return
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle(`Successfully Placed Bet`)
-      .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
-      .setColor('#00ff1e')
-      .addFields(
-        { name: "Event", value: `${res.market!.marketPricesData.marketOutcome} * vs * ${res.market!.marketPricesData.marketOutcomeAgainst}` },
-        { name: "Bet Type", value: args.getString("type", true).toUpperCase() },
-        { name: "Amount", value: `${args.getNumber("stake_amount", true)} USDT` },
-        { name: "Market Address", value: "" + args.getString('market_address', true) + "" }
-      )
+    if (res.data.success) {
+      const embed = new EmbedBuilder()
+        .setTitle(`Successfully Placed Bet`)
+        .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
+        .setColor('#00ff1e')
+        .addFields(
+          { name: "Event", value: `${res!.marketPricesData!.marketOutcome} * vs * ${res!.marketPricesData!.marketOutcomeAgainst}` },
+          { name: "Bet Type", value: args.getString("type", true).toUpperCase() },
+          { name: "Amount", value: `${args.getNumber("stake_amount", true)} USDT` },
+          { name: "Market Address", value: "" + args.getString('market_address', true) + "" }
+        )
 
-    await interaction.editReply({ embeds: [embed] })
+      await interaction.editReply({ embeds: [embed], content: `<@${interaction.user.id}>` })
+    }
+
   },
 
 };

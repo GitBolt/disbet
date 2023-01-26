@@ -23,6 +23,8 @@ export const getMarketOutcomePriceData = async (
     console.log("Market Public Key", marketPk.toString());
     let marketPricesResponse: ClientResponse<MarketPricesAndPendingOrders> =
         await getMarketPrices(program, marketPk);
+
+    console.log(marketPricesResponse)
     if (marketPricesResponse.success && marketPricesResponse.data) {
         const moreData = getBestMarketOutcomeWithOdd(marketPricesResponse.data);
         return moreData
@@ -164,7 +166,7 @@ export const placeBet = async (
     }
 
     try {
-        const createOrderResponse = await createOrder(
+        const data = await createOrder(
             program,
             new PublicKey(marketPk),
             marketPricesData.marketOutcomeIndex,
@@ -172,8 +174,9 @@ export const placeBet = async (
             marketPricesData.forOutcomePrice,
             stakeInteger
         );
-        return { error: false, data: createOrderResponse, market: { marketData, marketPricesData } }
+        return { data, marketPricesData }
     } catch (e: any) {
+        console.log("Error creating order: ", e.toString())
         return { error: true, data: e.toString() }
     }
 };
