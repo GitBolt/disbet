@@ -8,7 +8,7 @@ import { Wallet } from '../schema/wallet';
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('wallet')
-    .setDescription('Returns your wallet details')
+    .setDescription('Returns your betting wallet details')
   ,
 
   async execute(interaction: ChatInputCommandInteraction) {

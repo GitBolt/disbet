@@ -8,7 +8,7 @@ import { getProgram, parseProtocolNumber } from '../utils';
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('mybets')
-    .setDescription('Returns all active market data')
+    .setDescription('Returns your mets for a certain market event')
 
     .addStringOption((option: any) =>
       option.setName('market_address')

@@ -6,7 +6,7 @@ import { askPassword } from '../utils/askPassword';
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('placebet')
-    .setDescription('Returns all active market data')
+    .setDescription('Places a bet on an event either against or for it with the respective stake amount')
     .addStringOption((option: any) =>
       option.setName('type')
         .setDescription('Whether you want to place bet against or for the market event')

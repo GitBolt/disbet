@@ -7,7 +7,7 @@ import { getProgram } from '../utils';
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('cancelbet')
-    .setDescription('Returns all active market data')
+    .setDescription('Cancels a bet with the provided bet address')
 
     .addStringOption((option: any) =>
       option.setName('bet_address')
