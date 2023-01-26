@@ -1,9 +1,13 @@
-import { PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { AnchorProvider, setProvider, Program } from "@project-serum/anchor";
 import { BN } from "@project-serum/anchor"
+import CustomWallet from "./wallet";
 
-export async function getProgram(protocolAddress: PublicKey) {
-    const provider = AnchorProvider.env();
+export async function getProgram(protocolAddress: PublicKey, sk?: Uint8Array) {
+
+    const wallet = CustomWallet.with_private_key(sk || new Keypair().secretKey)
+    const connection = new Connection(process.env.RPC_URL as string)
+    const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions())
     setProvider(provider);
     const program = await Program.at(protocolAddress, provider);
     return program

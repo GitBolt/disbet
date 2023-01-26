@@ -149,9 +149,10 @@ export const placeBet = async (
     marketPk: string,
     type: "for" | "against",
     amount: number,
+    sk: Uint8Array
 ) => {
 
-    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
+    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'), sk);
 
     const marketData = await getMarket(program, new PublicKey(marketPk))
     const mintInfo = await getMintInfo(program, marketData.data.account.mintAccount)

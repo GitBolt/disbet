@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { placeBet } from '../protocol';
+import { askPassword } from '../utils/askPassword';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -25,10 +26,14 @@ module.exports = {
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.reply("Executing order...")
     const args = interaction.options
+
+    const sk = await askPassword(interaction)
+    if (!sk) return
     const res = await placeBet(
       args.getString('market_address', true),
       args.getString("type", true) as "for" | "against",
-      args.getNumber("stake_amount", true)
+      args.getNumber("stake_amount", true),
+      sk,
     )
 
     if (!res) {
