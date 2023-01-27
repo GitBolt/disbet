@@ -24,7 +24,6 @@ export const getMarketOutcomePriceData = async (
     let marketPricesResponse: ClientResponse<MarketPricesAndPendingOrders> =
         await getMarketPrices(program, marketPk);
 
-    console.log(marketPricesResponse)
     if (marketPricesResponse.success && marketPricesResponse.data) {
         const moreData = getBestMarketOutcomeWithOdd(marketPricesResponse.data);
         return moreData
@@ -44,7 +43,6 @@ export const getMarkets = async (token: string, interaction: ChatInputCommandInt
             marketsStatus,
             new PublicKey(token)
         );
-    console.log(marketsResponse)
     const embed = new EmbedBuilder();
     embed.setColor('#ff0062')
         .setTitle('Market Outcomes')

@@ -27,7 +27,7 @@ module.exports = {
     const lamports = await connection.getBalance(new PublicKey(wallet!.publicKey as string))
 
     const res = await axios.get('https://cdn.jsdelivr.net/gh/solana-labs/token-list@latest/src/tokens/solana.tokenlist.json')
-    const tokenList = await res.data()
+    const tokenList = await res.data
     const parsedTokens = response.value.map((item) => { return ({ mint: item.account.data.parsed.info.mint, amount: item.account.data.parsed.info.tokenAmount.uiAmount }) })
 
     const finalList = parsedTokens.map((token) => {
