@@ -18,6 +18,7 @@ module.exports = {
       return
     }
 
+    interaction.reply("Getting wallet details...")
     const connection = new Connection(process.env.RPC_URL as string)
     let response = await connection.getParsedTokenAccountsByOwner(new PublicKey(wallet!.publicKey as string), {
       programId: TOKEN_PROGRAM_ID,
@@ -25,7 +26,6 @@ module.exports = {
 
     const lamports = await connection.getBalance(new PublicKey(wallet!.publicKey as string))
 
-    await interaction.reply("Getting your wallet...")
     const res = await fetch('https://cdn.jsdelivr.net/gh/solana-labs/token-list@latest/src/tokens/solana.tokenlist.json')
     const tokenList = await res.json()
     const parsedTokens = response.value.map((item) => { return ({ mint: item.account.data.parsed.info.mint, amount: item.account.data.parsed.info.tokenAmount.uiAmount }) })
@@ -52,8 +52,8 @@ module.exports = {
     console.log(tokenString);
 
 
-    await interaction.editReply({
-      content: "Done!",
+    await interaction.channel.send({
+      content: "Done! " + `<@${interaction.user.id}>`,
       embeds: [
         new EmbedBuilder()
           .setTitle("This is your betting wallet")
