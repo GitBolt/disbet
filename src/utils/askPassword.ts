@@ -2,12 +2,14 @@ import { EmbedBuilder } from "@discordjs/builders";
 import { ChatInputCommandInteraction } from "discord.js";
 import { decrypt } from "../crypto/encrypt";
 import { Wallet } from "../schema/wallet";
+import COLORS from '../constants';
 
 export const askPassword = async (interaction: ChatInputCommandInteraction) => {
 
     const embed = new EmbedBuilder()
         .setTitle("Enter your encryption password")
         .setDescription("The next message which you will send will be considered your password to authorize transaction")
+        .setColor(COLORS.default)
     try {
         const dmMessage = await interaction.user.send({ embeds: [embed] })
 
