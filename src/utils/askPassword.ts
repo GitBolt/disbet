@@ -1,8 +1,7 @@
-import { EmbedBuilder } from "@discordjs/builders";
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { decrypt } from "../crypto/encrypt";
 import { Wallet } from "../schema/wallet";
-import COLORS from '../constants';
+import { COLORS } from '../constants';
 
 export const askPassword = async (interaction: ChatInputCommandInteraction) => {
 
