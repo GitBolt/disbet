@@ -1,9 +1,9 @@
-import { token } from '@project-serum/anchor/dist/cjs/utils';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
-import { COLORS, EMOJIS, TOKENLISTURL } from '../constants';
+import { COLORS, EMOJIS } from '../constants';
 import { Wallet } from '../schema/wallet';
+import axios from 'axios'
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -26,8 +26,8 @@ module.exports = {
 
     const lamports = await connection.getBalance(new PublicKey(wallet!.publicKey as string))
 
-    const res = await fetch('https://cdn.jsdelivr.net/gh/solana-labs/token-list@latest/src/tokens/solana.tokenlist.json')
-    const tokenList = await res.json()
+    const res = await axios.get('https://cdn.jsdelivr.net/gh/solana-labs/token-list@latest/src/tokens/solana.tokenlist.json')
+    const tokenList = await res.data()
     const parsedTokens = response.value.map((item) => { return ({ mint: item.account.data.parsed.info.mint, amount: item.account.data.parsed.info.tokenAmount.uiAmount }) })
 
     const finalList = parsedTokens.map((token) => {
