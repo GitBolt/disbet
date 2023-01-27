@@ -18,7 +18,7 @@ module.exports = {
       return
     }
 
-    interaction.reply("Getting wallet details...")
+    // interaction.reply("Getting wallet details...")
     const connection = new Connection(process.env.RPC_URL as string)
     let response = await connection.getParsedTokenAccountsByOwner(new PublicKey(wallet!.publicKey as string), {
       programId: TOKEN_PROGRAM_ID,
@@ -48,9 +48,6 @@ module.exports = {
       const amount = token.amount;
       tokenString += `[**${symbol}**](https://solscan.io/account/${mint})\n**Balance**: ${amount}\n\n`;
     });
-
-    console.log(tokenString);
-
 
     await interaction.channel.send({
       content: "Done! " + `<@${interaction.user.id}>`,
