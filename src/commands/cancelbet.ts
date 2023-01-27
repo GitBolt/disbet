@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { COLORS } from '../constants';
 import { getProgram } from '../utils';
+import { askPassword } from '../utils/askPassword';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -20,7 +21,10 @@ module.exports = {
 
     await interaction.reply("Processing...")
     const bet_address = interaction.options.getString('bet_address', true)
-    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
+
+    const sk = await askPassword(interaction)
+    if (!sk) return
+    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'), sk);
 
     const res = await cancelOrder(program, new PublicKey(bet_address))
 

@@ -41,7 +41,7 @@ module.exports = {
       await interaction.followUp(`Error finding market data <@${interaction.user.id}>`)
       return
     }
-    if (res.data.errors) {
+    if (res.data.errors.length) {
       await interaction.followUp(`<@${interaction.user.id}> Following error occured while placing bet: \`\`\`${res.data.errors[0]}\`\`\`\ `)
       return
     }
