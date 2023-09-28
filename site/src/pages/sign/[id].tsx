@@ -11,21 +11,18 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
-import { placeBet } from '../../../utils/protocol';
+import { cancelBet, placeBet } from '../../../utils/protocol';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { Navbar } from '../../../components/Navbar';
+import { cancelOrder } from '@monaco-protocol/client';
+import { CancelBetView } from '../../../components/CancelBetView';
+import { PlaceBetView } from '../../../components/PlaceBetView';
 
 interface Props {
   data: any;
   error?: any;
 }
-export const truncatedPublicKey = (publicKey: string, length?: number) => {
-  if (!publicKey) return;
-  if (!length) {
-    length = 5;
-  }
-  return publicKey.replace(publicKey.slice(length, 44 - length), '...');
-};
+
 
 const Sign = function SignPage(props: Props) {
   const toast = useToast();
@@ -43,30 +40,40 @@ const Sign = function SignPage(props: Props) {
     setProcessing(true)
     const data = props.data;
 
-    if (data.transaction_type === 'placeBet') {
-      try {
-        const res = await placeBet(data.marketPk, data.marketPk, data.amount, wallet as NodeWallet);
-        if (res && res.data.success) {
-          toast({
-            status: 'success',
-            title: 'Transaction successful',
-          });
-        } else {
-          toast({
-            status: 'error',
-            title: res && res.errors ? res.errors.toString() : "Error occured",
-          });
-        }
-        setProcessing(false)
-      } catch (error) {
+    try {
+      let res
+      if (data.transaction_type === 'placeBet') {
+        res = await placeBet(data.marketPk, data.marketPk, data.amount, wallet as NodeWallet);
+      } else if (data.transaction_type === 'cancelBet') {
+        res = await cancelBet(data.betAddress, wallet as NodeWallet);
+      } else {
         toast({
           status: 'error',
-          title: 'Transaction failed',
+          title: 'Something went wrong, try again',
         });
-        console.error(error);
+        return
+      }
+      if (res && res.data.success) {
+        toast({
+          status: 'success',
+          title: 'Transaction successful',
+        });
+      } else {
+        toast({
+          status: 'error',
+          title: res && res.errors ? res.errors.toString() : "Error occured",
+        });
       }
       setProcessing(false)
+    } catch (error) {
+      toast({
+        status: 'error',
+        title: 'Transaction failed',
+      });
+      console.error(error);
     }
+    setProcessing(false)
+
   };
 
   useEffect(() => {
@@ -91,20 +98,14 @@ const Sign = function SignPage(props: Props) {
       </Head>
       <Center h="80vh">
         <VStack spacing={4}>
-          <Box>
-            <Text fontSize="5rem" fontWeight={800}>You Are About To Place a Bet</Text>
-          </Box>
 
-          <Divider />
 
-          <Box fontSize="2.5rem">
-            <Text>Market Address:
-              <a href={`https://solscan.io/address/${props.data.marketPk}`} target="_blank" style={{ color: "#127aff", textDecoration: "underline" }}>{truncatedPublicKey(props.data.marketPk, 5)}</a>
-            </Text>
-            <Text>Type: {props.data.type}</Text>
-            <Text>Amount: {props.data.amount} USDT</Text>
-          </Box>
-          <Divider />
+          {props.data.transaction_type == "cancelBet" ? <CancelBetView betAddress={props.data.betAddress} /> :
+            <PlaceBetView
+              type={props.data.type}
+              amount={props.data.amount}
+              marketPk={props.data.marketPk}
+            />}
 
           <Button
             colorScheme="messenger"

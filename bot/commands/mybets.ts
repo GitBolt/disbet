@@ -15,6 +15,10 @@ module.exports = {
         .setDescription('[OPTIONAL] Public key of the market you want to see your bets for')
         .setRequired(false))
 
+    .addStringOption((option: any) =>
+      option.setName('address')
+        .setDescription('Non custodial wallet')
+        .setRequired(false))
   ,
 
   async execute(interaction: ChatInputCommandInteraction) {
@@ -35,6 +39,7 @@ module.exports = {
     await interaction.reply("Fetching your bets...")
 
     const market_address = interaction.options.getString('market_address')
+    const address = interaction.options.getString('address')
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
 
     let betOrdersResponse
@@ -44,9 +49,17 @@ module.exports = {
         .filterByPurchaser(new PublicKey(wallet!.publicKey as string))
         .fetch();
     } else {
-      betOrdersResponse = await new Orders(program)
+
+      if (address) {
+        betOrdersResponse = await new Orders(program)
+        .filterByPurchaser(new PublicKey(address as string))
+        .fetch();
+      } else {
+        betOrdersResponse = await new Orders(program)
         .filterByPurchaser(new PublicKey(wallet!.publicKey as string))
         .fetch();
+      }
+
     }
 
     const accs = betOrdersResponse.data.orderAccounts

@@ -5,6 +5,7 @@ import {
     createOrder,
     getMintInfo,
     getMarket,
+    cancelOrder,
 } from "@monaco-protocol/client";
 import { PublicKey } from "@solana/web3.js";
 import { TOKENLIST } from "./constants";
@@ -129,4 +130,22 @@ export const placeBet = async (
         console.log("Error creating order: ", e.errors.toString())
         return { errors: true, data: e.toString() }
     }
+};
+
+
+export const cancelBet = async (
+    betAddress: string,
+    wallet: NodeWallet
+) => {
+
+    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'), wallet);
+
+    try {
+        const data = await cancelOrder(program, new PublicKey(betAddress))
+        return { data }
+    } catch (e: any) {
+        console.log("Error cancelling order: ", e.errors.toString())
+        return { errors: true, data: e.toString() }
+    }
+
 };
