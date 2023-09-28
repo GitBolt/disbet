@@ -14,7 +14,6 @@ import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { cancelBet, placeBet } from '../../../utils/protocol';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { Navbar } from '../../../components/Navbar';
-import { cancelOrder } from '@monaco-protocol/client';
 import { CancelBetView } from '../../../components/CancelBetView';
 import { PlaceBetView } from '../../../components/PlaceBetView';
 

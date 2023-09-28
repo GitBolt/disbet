@@ -27,6 +27,7 @@
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@types/bs58": "^4.0.2",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
