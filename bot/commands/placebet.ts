@@ -4,6 +4,7 @@ import { placeBet } from '../protocol';
 import { askPassword } from '../utils/askPassword';
 import { isCustodial } from '../utils/isCustodial';
 import { sendPlaceBetURL } from '../network/getCustodialUrl';
+import { simpleErrors } from '../utils/simpleErrors';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -51,13 +52,12 @@ module.exports = {
       args.getNumber("stake_amount", true),
       sk,
     )
-    console.log(res)
     if (!res) {
       await interaction.followUp(`Error finding market data <@${interaction.user.id}>`)
       return
     }
     if (res.data.errors.length) {
-      await interaction.followUp(`<@${interaction.user.id}> Following error occured while placing bet: \`\`\`${res.data.errors[0]}\`\`\`\ `)
+      await interaction.followUp(`<@${interaction.user.id}> Following error occured while placing bet: \`\`\`${simpleErrors(res.data.errors[0].toString())}\`\`\`\ `)
       return
     }
 

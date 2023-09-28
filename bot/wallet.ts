@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
-import { Wallet } from "@coral-xyz/anchor";
+import { Wallet } from "@project-serum/anchor";
 
 export default class CustomWallet implements Wallet {
   constructor(readonly payer: Keypair) { }

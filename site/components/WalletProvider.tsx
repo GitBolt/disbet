@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const Wallet: FC<Props> = ({ children }: Props) => {
-  const network = WalletAdapterNetwork.Devnet;
+  const network = WalletAdapterNetwork.Mainnet;
 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
