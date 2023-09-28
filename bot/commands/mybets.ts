@@ -12,8 +12,8 @@ module.exports = {
 
     .addStringOption((option: any) =>
       option.setName('market_address')
-        .setDescription('Public key of the market you want to see your bets for')
-        .setRequired(true))
+        .setDescription('[OPTIONAL] Public key of the market you want to see your bets for')
+        .setRequired(false))
 
   ,
 
@@ -34,18 +34,26 @@ module.exports = {
 
     await interaction.reply("Fetching your bets...")
 
-    const market_address = interaction.options.getString('market_address', true)
+    const market_address = interaction.options.getString('market_address')
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
 
-    const betOrdersResponse = await new Orders(program)
-      .filterByMarket(new PublicKey(market_address))
-      .filterByPurchaser(new PublicKey(wallet!.publicKey as string))
-      .fetch();
+    let betOrdersResponse
+    if (market_address) {
+      betOrdersResponse = await new Orders(program)
+        .filterByMarket(new PublicKey(market_address))
+        .filterByPurchaser(new PublicKey(wallet!.publicKey as string))
+        .fetch();
+    } else {
+      betOrdersResponse = await new Orders(program)
+        .filterByPurchaser(new PublicKey(wallet!.publicKey as string))
+        .fetch();
+    }
+
     const accs = betOrdersResponse.data.orderAccounts
 
     const embed = new EmbedBuilder()
       .setTitle("Your Bets")
-      .setDescription(`These are your bets for account: \`\`\`${market_address}\`\`\``)
+      .setDescription(`These are your bets ${market_address ? `for account: \`\`\`${market_address}\`\`\`` : ''}`)
       .setColor(COLORS.default)
 
     if (!accs.length) {

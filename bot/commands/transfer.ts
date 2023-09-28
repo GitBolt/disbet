@@ -90,9 +90,9 @@ module.exports = {
                 );
                 const latestBlockHash = await connection.getLatestBlockhash('confirmed');
                 tx.recentBlockhash = await latestBlockHash.blockhash;
-                const signature = await sendAndConfirmTransaction(connection, tx, [kpObject]);
+                const signature = await connection.sendTransaction(tx, [kpObject]);
                 const embed = new EmbedBuilder()
-                    .setTitle(`Successfully Transferred Token`)
+                    .setTitle(`Successfully Transferred SOL`)
                     .setURL(`https://solscan.io/tx/${signature}`)
                     .setColor(COLORS.success)
                 await interaction.editReply({ embeds: [embed] })
@@ -122,7 +122,7 @@ module.exports = {
 
                     const latestBlockHash = await connection.getLatestBlockhash('confirmed');
                     tx.recentBlockhash = await latestBlockHash.blockhash;
-                    const signature = await sendAndConfirmTransaction(connection, tx, [kpObject]);
+                    const signature = await connection.sendTransaction(tx, [kpObject]);
                     const embed = new EmbedBuilder()
                         .setTitle(`Successfully Transferred Token`)
                         .setURL(`https://solscan.io/tx/${signature}`)
