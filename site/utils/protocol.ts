@@ -8,16 +8,17 @@ import {
     createOrder,
     getMintInfo,
     getMarket,
+    createOrderUiStake,
 } from "@monaco-protocol/client";
-import { BN, Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { EmbedBuilder, ChatInputCommandInteraction } from "discord.js";
 import { TOKENLIST } from "./constants";
 import { getKeyByValue, getProgram } from "./utils";
-
+import { BN } from "@coral-xyz/anchor";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
+import { Program as SerumProgram } from '@project-serum/anchor'
 
 export const getMarketOutcomePriceData = async (
-    program: Program,
+    program: SerumProgram,
     marketPk: PublicKey
 ) => {
     console.log("Market Public Key", marketPk.toString());
@@ -31,60 +32,6 @@ export const getMarketOutcomePriceData = async (
     return null;
 };
 
-const marketsStatus = MarketStatus.Open;
-
-export const getMarkets = async (token: string, interaction: ChatInputCommandInteraction) => {
-    console.log("Fetching markets...")
-    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
-
-    const marketsResponse: ClientResponse<MarketAccounts> =
-        await getMarketAccountsByStatusAndMintAccount(
-            program,
-            marketsStatus,
-            new PublicKey(token)
-        );
-    const embed = new EmbedBuilder();
-    embed.setColor('#ff0062')
-        .setTitle('Market Outcomes')
-        .setDescription(`These are the latest market outcomes of **${getKeyByValue(TOKENLIST, token)}**`)
-        .setTimestamp()
-
-    console.log("Market Response: ", marketsResponse.success)
-    await interaction.editReply({ embeds: [embed], content: "Loading..." });
-    if (marketsResponse.success && marketsResponse.data?.markets?.length) {
-
-        const currentTime = +new Date() / 1000
-
-        const marketsWithOutcomes = marketsResponse.data.markets.filter(
-            (market) => market.account.marketOutcomesCount > 0
-        ).filter((market) => market.account.marketLockTimestamp.toNumber() > currentTime)
-
-        for (let i = 0; i < marketsWithOutcomes.length; i++) {
-            let marketPk = marketsWithOutcomes[i].publicKey;
-            let marketPricesData = await getMarketOutcomePriceData(program, marketPk);
-            if (!marketPricesData) {
-                console.log("No data: ", marketPk.toBase58())
-                continue;
-            }
-            const marketData = {
-                pk: marketPk.toString(),
-                market: marketsWithOutcomes[i],
-                prices: marketPricesData,
-            };
-            const formattedString = `For Outcome Price: \`${marketData.prices.forOutcomePrice}\`\nTo Outcome Price: \`${marketData.prices.againstOutcomePrice}\`\nAddress: \`${marketData.pk}\`\n[View on Solscan](https://solscan.io/account/${marketData.pk})`;
-            embed.addFields(
-                {
-                    name: `${marketData.prices.marketOutcome} vs ${marketData.prices.marketOutcomeAgainst}`,
-                    value: formattedString
-                }
-            )
-            await interaction.editReply({ embeds: [embed], content: "Loading..." });
-        }
-    } else {
-        await interaction.editReply({ embeds: [embed.setDescription('Looks empty in here')], content: "No markets found" })
-    }
-    await interaction.editReply({ embeds: [embed], content: "Done!" })
-};
 
 
 const getBestMarketOutcomeWithOdd = (
@@ -149,10 +96,10 @@ export const placeBet = async (
     marketPk: string,
     type: "for" | "against",
     amount: number,
-    sk: Uint8Array
+    wallet: NodeWallet
 ) => {
 
-    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'), sk);
+    const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'), wallet);
 
     const marketData = await getMarket(program, new PublicKey(marketPk))
     const mintInfo = await getMintInfo(program, marketData.data.account.mintAccount)
@@ -164,7 +111,7 @@ export const placeBet = async (
     }
 
     try {
-        const data = await createOrder(
+        const data = await createOrderUiStake(
             program,
             new PublicKey(marketPk),
             marketPricesData.marketOutcomeIndex,
@@ -178,3 +125,4 @@ export const placeBet = async (
         return { error: true, data: e.toString() }
     }
 };
+

@@ -2,6 +2,8 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from '
 import { COLORS } from '../constants';
 import { placeBet } from '../protocol';
 import { askPassword } from '../utils/askPassword';
+import { isCustodial } from '../utils/isCustodial';
+import { sendPlaceBetURL } from '../network/getCustodialUrl';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -25,8 +27,21 @@ module.exports = {
   ,
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.reply("Executing order...")
     const args = interaction.options
+
+    const custodial = await isCustodial(interaction.user.id)
+    if (!custodial) {
+      const res = await sendPlaceBetURL(
+        args.getString('market_address', true),
+        args.getString("type", true) as "for" | "against",
+        args.getNumber("stake_amount", true),
+      )
+      await interaction.reply(`Head over to [this link](${res}) and sign the transaction using your browser wallet!`)
+      return
+    }
+
+    await interaction.reply("Executing order...")
+
 
     const sk = await askPassword(interaction)
     if (!sk) return

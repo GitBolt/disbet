@@ -1,12 +1,11 @@
+import { AnchorProvider, BN, setProvider } from "@coral-xyz/anchor";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import { AnchorProvider, setProvider, Program } from "@project-serum/anchor";
-import { BN } from "@project-serum/anchor"
-import CustomWallet from "./wallet";
+import { Program } from '@project-serum/anchor';
 
-export async function getProgram(protocolAddress: PublicKey, sk?: Uint8Array) {
-
-    const wallet = CustomWallet.with_private_key(sk || new Keypair().secretKey)
-    const connection = new Connection(process.env.RPC_URL as string)
+export async function getProgram(protocolAddress: PublicKey, wallet: NodeWallet) {
+    const RPC_URL = "https://solana-mainnet.g.alchemy.com/v2/DBttxukNil1Us0M605rbiUwEnG9zRW4G"
+    const connection = new Connection(RPC_URL)
     const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions())
     setProvider(provider);
     const program = await Program.at(protocolAddress, provider);

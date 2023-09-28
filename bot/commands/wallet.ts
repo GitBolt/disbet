@@ -4,6 +4,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from '
 import { COLORS, EMOJIS } from '../constants';
 import { Wallet } from '../schema/wallet';
 import axios from 'axios'
+import { isCustodial } from '../utils/isCustodial';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,6 +13,12 @@ module.exports = {
   ,
 
   async execute(interaction: ChatInputCommandInteraction) {
+    const custodial = await isCustodial(interaction.user.id)
+    if (!custodial) {
+      await interaction.reply("Switch to custodial wallet to view its balance. Enter `/switch`")
+      return
+    }
+  
     const wallet = await Wallet.findOne({ discord_id: interaction.user.id })
     if (!wallet) {
       await interaction.reply("Wallet not created. Get started by entering `/init`")

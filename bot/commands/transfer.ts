@@ -5,6 +5,7 @@ import { COLORS, EMOJIS } from '../constants';
 import { Wallet } from '../schema/wallet';
 import axios from 'axios'
 import { askPassword } from '../utils/askPassword';
+import { isCustodial } from '../utils/isCustodial';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -29,6 +30,13 @@ module.exports = {
     ,
 
     async execute(interaction: ChatInputCommandInteraction) {
+
+        const custodial = await isCustodial(interaction.user.id)
+        if (!custodial) {
+          await interaction.reply("Switch to custodial wallet to transfer its balance. Enter `/switch`")
+          return
+        }
+
         await interaction.reply("Transferring...")
         const args = interaction.options
 
@@ -76,8 +84,8 @@ module.exports = {
                 const tx = new Transaction().add(
                     SystemProgram.transfer({
                         fromPubkey: kpObject.publicKey,
-                        toPubkey: new PublicKey(address),
-                        lamports: LAMPORTS_PER_SOL * amount,
+                        toPubkey: new PublicKey(address!),
+                        lamports: LAMPORTS_PER_SOL * amount!,
                     })
                 );
                 const latestBlockHash = await connection.getLatestBlockhash('confirmed');
@@ -101,7 +109,7 @@ module.exports = {
                         connection,
                         kpObject,
                         new PublicKey(userToken.mint),
-                        new PublicKey(address)
+                        new PublicKey(address!)
                     );
 
                     const tx = new Transaction();
@@ -109,7 +117,7 @@ module.exports = {
                         sourceAccount.address,
                         destinationAccount.address,
                         kpObject.publicKey,
-                        amount * Math.pow(10, userToken.decimals)
+                        amount! * Math.pow(10, userToken.decimals)
                     ))
 
                     const latestBlockHash = await connection.getLatestBlockhash('confirmed');

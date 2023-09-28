@@ -1,6 +1,11 @@
 import mongoose from 'mongoose'
 
 const Schema = new mongoose.Schema({
+    custodial: {
+        type: Boolean,
+        required: true,
+        default: true,
+    },
     discord_id: {
         type: Number,
         required: true,
