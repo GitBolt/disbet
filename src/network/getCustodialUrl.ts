@@ -13,7 +13,7 @@ export const sendPlaceBetURL = async (
 
     const encoded = Buffer.from(JSON.stringify(data)).toString('base64')
 
-    return "http://localhost:3000/sign/"  + encoded
+    return "https://disbet.vercel.app/sign/"  + encoded
 }
 
 export const cancelBetURL = async (
@@ -27,5 +27,5 @@ export const cancelBetURL = async (
 
     const encoded = Buffer.from(JSON.stringify(data)).toString('base64')
 
-    return "http://localhost:3000/sign/"  + encoded
+    return "https://disbet.vercel.app/sign/"  + encoded
 }
