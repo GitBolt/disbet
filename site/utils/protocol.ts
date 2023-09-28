@@ -1,14 +1,10 @@
 import {
-    getMarketAccountsByStatusAndMintAccount,
     getMarketPrices,
-    MarketStatus,
     ClientResponse,
-    MarketAccounts,
     MarketPricesAndPendingOrders,
     createOrder,
     getMintInfo,
     getMarket,
-    createOrderUiStake,
 } from "@monaco-protocol/client";
 import { PublicKey } from "@solana/web3.js";
 import { TOKENLIST } from "./constants";
@@ -111,18 +107,26 @@ export const placeBet = async (
     }
 
     try {
-        const data = await createOrderUiStake(
+        console.log({
+            pk: new PublicKey(marketPk),
+            indx: marketPricesData.marketOutcomeIndex,
+            for: type == "for" ? true : false,
+            price: type == "for" ? marketPricesData.forOutcomePrice : marketPricesData.againstOutcomePrice,
+            stakeInteger: stakeInteger.toNumber()
+        })
+        const data = await createOrder(
             program,
             new PublicKey(marketPk),
             marketPricesData.marketOutcomeIndex,
             type == "for" ? true : false,
-            marketPricesData.forOutcomePrice,
+            type == "for" ? marketPricesData.forOutcomePrice : marketPricesData.againstOutcomePrice,
             stakeInteger
         );
+
+        console.log("Order Res: ", data)
         return { data, marketPricesData }
     } catch (e: any) {
-        console.log("Error creating order: ", e.toString())
-        return { error: true, data: e.toString() }
+        console.log("Error creating order: ", e.errors.toString())
+        return { errors: true, data: e.toString() }
     }
 };
-

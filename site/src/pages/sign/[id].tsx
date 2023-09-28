@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head'
 import {
@@ -19,11 +19,18 @@ interface Props {
   data: any;
   error?: any;
 }
+export const truncatedPublicKey = (publicKey: string, length?: number) => {
+  if (!publicKey) return;
+  if (!length) {
+    length = 5;
+  }
+  return publicKey.replace(publicKey.slice(length, 44 - length), '...');
+};
 
 const Sign = function SignPage(props: Props) {
   const toast = useToast();
   const wallet = useAnchorWallet();
-  const router = useRouter();
+  const [processing, setProcessing] = useState<boolean>(false)
 
   const performAction = async () => {
     if (!wallet) {
@@ -33,13 +40,13 @@ const Sign = function SignPage(props: Props) {
       });
       return;
     }
-
+    setProcessing(true)
     const data = props.data;
 
     if (data.transaction_type === 'placeBet') {
       try {
-        const res = await placeBet(data.marketPk, data.marketPk, data.marketPk, wallet as NodeWallet);
-        if (res && !res.error) {
+        const res = await placeBet(data.marketPk, data.marketPk, data.amount, wallet as NodeWallet);
+        if (res && res.data.success) {
           toast({
             status: 'success',
             title: 'Transaction successful',
@@ -47,10 +54,10 @@ const Sign = function SignPage(props: Props) {
         } else {
           toast({
             status: 'error',
-            title: res ? res.error : "Error occured",
+            title: res && res.errors ? res.errors.toString() : "Error occured",
           });
         }
-
+        setProcessing(false)
       } catch (error) {
         toast({
           status: 'error',
@@ -58,6 +65,7 @@ const Sign = function SignPage(props: Props) {
         });
         console.error(error);
       }
+      setProcessing(false)
     }
   };
 
@@ -90,9 +98,11 @@ const Sign = function SignPage(props: Props) {
           <Divider />
 
           <Box fontSize="2.5rem">
-            <Text>Market Address: {props.data.marketPk}</Text>
+            <Text>Market Address:
+              <a href={`https://solscan.io/address/${props.data.marketPk}`} target="_blank" style={{ color: "#127aff", textDecoration: "underline" }}>{truncatedPublicKey(props.data.marketPk, 5)}</a>
+            </Text>
             <Text>Type: {props.data.type}</Text>
-            <Text>Amount: {props.data.amount}</Text>
+            <Text>Amount: {props.data.amount} USDT</Text>
           </Box>
           <Divider />
 
@@ -101,9 +111,10 @@ const Sign = function SignPage(props: Props) {
             onClick={performAction}
             fontSize="2rem"
             width="17rem"
+            isDisabled={processing}
             borderRadius="1rem"
             height="4rem">
-            Go Ahead
+            {processing ? 'Processing...' : 'Go Ahead'}
           </Button>
         </VStack>
       </Center>
