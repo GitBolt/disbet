@@ -12,7 +12,6 @@ import {
 } from '@chakra-ui/react';
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { cancelBet, placeBet } from '../../../utils/protocol';
-import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { Navbar } from '../../../components/Navbar';
 import { CancelBetView } from '../../../components/CancelBetView';
 import { PlaceBetView } from '../../../components/PlaceBetView';
@@ -42,9 +41,9 @@ const Sign = function SignPage(props: Props) {
     try {
       let res
       if (data.transaction_type === 'placeBet') {
-        res = await placeBet(data.marketPk, data.marketPk, data.amount, wallet as NodeWallet);
+        res = await placeBet(data.marketPk, data.marketPk, data.amount, wallet as any);
       } else if (data.transaction_type === 'cancelBet') {
-        res = await cancelBet(data.betAddress, wallet as NodeWallet);
+        res = await cancelBet(data.betAddress, wallet as any);
       } else {
         toast({
           status: 'error',
