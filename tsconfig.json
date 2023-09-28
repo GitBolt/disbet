@@ -1,9 +1,12 @@
 {
   "include": [
-    "bot/**/*.ts",
-    "bot/*.ts"
+    "src/**/*.ts",
+    "src/*.ts"
   ],
   "compilerOptions": {
+    "skipLibCheck": true,
+    "typeRoots": ["./node_modules/@types"],
+    "types": [],
     "noImplicitAny": false,
     "target": "es2020",                                     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "module": "commonjs",                                /* Specify what module code is generated. */
@@ -11,7 +14,6 @@
     "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
     "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
     "strict": false,   
-    "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
   },
-  "exclude": ["node_modules", "site"]
+  "exclude": ["node_modules"]
 }
