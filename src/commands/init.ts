@@ -14,7 +14,7 @@ module.exports = {
 
     const existingWallet = await Wallet.findOne({ discord_id: interaction.user.id });
     if (existingWallet) {
-      await interaction.reply(`You already have a wallet with public key \`${existingWallet.publicKey}\``)
+      await interaction.reply({ content: `You already have a wallet with public key \`${existingWallet.publicKey}\``, ephemeral: true })
     } else {
       try {
         const embed = new EmbedBuilder()
@@ -58,7 +58,7 @@ module.exports = {
 
       } catch (e: any) {
         if (e.toString().includes("DiscordAPIError")) {
-          await interaction.followUp("I am not able to DM you, please open your DMs to create your betting wallet")
+          await interaction.followUp({content: "I am not able to DM you, please open your DMs to create your betting wallet", ephemeral: true})
         } else {
           await interaction.followUp("Uh oh, something went wrong")
         }

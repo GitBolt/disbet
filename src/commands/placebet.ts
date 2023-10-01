@@ -37,11 +37,11 @@ module.exports = {
         args.getString("type", true) as "for" | "against",
         args.getNumber("stake_amount", true),
       )
-      await interaction.reply(`Head over to [this link](${res}) and sign the transaction using your browser wallet!`)
+      await interaction.reply({ content: `Head over to [this link](${res}) and sign the transaction using your browser wallet!`, ephemeral: true })
       return
     }
 
-    await interaction.reply("Executing order...")
+    await interaction.reply({ content: "Executing order...", ephemeral: true })
 
 
     const sk = await askPassword(interaction)
@@ -53,11 +53,14 @@ module.exports = {
       sk,
     )
     if (!res) {
-      await interaction.followUp(`Error finding market data <@${interaction.user.id}>`)
+      await interaction.followUp({ content: `Error finding market data <@${interaction.user.id}>`, ephemeral: true })
       return
     }
     if (res.data.errors.length) {
-      await interaction.followUp(`<@${interaction.user.id}> Following error occured while placing bet: \`\`\`${simpleErrors(res.data.errors[0].toString())}\`\`\`\ `)
+      await interaction.followUp({
+        content: `<@${interaction.user.id}> Following error occured while placing bet: \`\`\`${simpleErrors(res.data.errors[0].toString())}\`\`\`\ `,
+        ephemeral: true
+      })
       return
     }
 

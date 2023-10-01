@@ -31,12 +31,13 @@ module.exports = {
           new EmbedBuilder().setTitle("Wallet not created")
             .setDescription("Enter `/init` to get started")
             .setColor("Orange")
-        ]
+        ],
+        ephemeral: true
       })
       return
     }
 
-    await interaction.reply("Fetching your bets...")
+    await interaction.reply({content: "Fetching your bets...", ephemeral: true})
 
     const market_address = interaction.options.getString('market_address')
     const address = interaction.options.getString('address')

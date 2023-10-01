@@ -33,8 +33,8 @@ module.exports = {
 
         const custodial = await isCustodial(interaction.user.id)
         if (!custodial) {
-          await interaction.reply("Switch to custodial wallet to transfer its balance. Enter `/switch`")
-          return
+            await interaction.reply({ content: "Switch to custodial wallet to transfer its balance. Enter `/switch`", ephemeral: true })
+            return
         }
 
         await interaction.reply("Transferring...")
@@ -46,7 +46,7 @@ module.exports = {
 
         const wallet = await Wallet.findOne({ discord_id: interaction.user.id })
         if (!wallet) {
-            await interaction.followUp("Wallet not created. Get started by entering `/init`")
+            await interaction.followUp({ content: "Wallet not created. Get started by entering `/init`", ephemeral: true })
             return
         }
 
@@ -77,7 +77,7 @@ module.exports = {
         const userToken = finalList.find((t) => t.symbol == token)
         const kpObject = Keypair.fromSecretKey(sk)
         if (!userToken && token != "SOL") {
-            await interaction.followUp(`<@${interaction.user.id}> You don't own that token. Use the command \`/wallet\` to view your tokens and balances.`)
+            await interaction.followUp({ content: `<@${interaction.user.id}> You don't own that token. Use the command \`/wallet\` to view your tokens and balances.`, ephemeral: true })
         } else {
 
             if (token == "SOL") {
@@ -95,7 +95,7 @@ module.exports = {
                     .setTitle(`Successfully Transferred SOL`)
                     .setURL(`https://solscan.io/tx/${signature}`)
                     .setColor(COLORS.success)
-                await interaction.editReply({ embeds: [embed] })
+                await interaction.followUp({ embeds: [embed] })
             } else {
                 try {
                     let sourceAccount = await getOrCreateAssociatedTokenAccount(
@@ -127,15 +127,15 @@ module.exports = {
                         .setTitle(`Successfully Transferred Token`)
                         .setURL(`https://solscan.io/tx/${signature}`)
                         .setColor(COLORS.success)
-                    await interaction.editReply({ embeds: [embed] })
+                    await interaction.followUp({ embeds: [embed] })
                 }
                 catch (e) {
-                    await interaction.followUp(`<@${interaction.user.id}> Error: \`\`\`${e}\`\`\` `)
-    
+                    await interaction.followUp({ content: `<@${interaction.user.id}> Error: \`\`\`${e}\`\`\` `, ephemeral: true })
+
                 }
             }
-        
-          
+
+
         }
     },
 };

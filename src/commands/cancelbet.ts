@@ -27,7 +27,7 @@ module.exports = {
       const res = await cancelBetURL(
         bet_address,
       )
-      await interaction.reply(`Head over to [this link](${res}) and sign the transaction using your browser wallet!`)
+      await interaction.reply({ content: `Head over to [this link](${res}) and sign the transaction using your browser wallet!`, ephemeral: true })
       return
     }
 

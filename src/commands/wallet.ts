@@ -15,13 +15,13 @@ module.exports = {
   async execute(interaction: ChatInputCommandInteraction) {
     const custodial = await isCustodial(interaction.user.id)
     if (!custodial) {
-      await interaction.reply("Switch to custodial wallet to view its balance. Enter `/switch`")
+      await interaction.reply({ content: "Switch to custodial wallet to view its balance. Enter `/switch`", ephemeral: true })
       return
     }
-  
+
     const wallet = await Wallet.findOne({ discord_id: interaction.user.id })
     if (!wallet) {
-      await interaction.reply("Wallet not created. Get started by entering `/init`")
+      await interaction.reply({ content: "Wallet not created. Get started by entering `/init`", ephemeral: true })
       return
     }
 
@@ -56,14 +56,15 @@ module.exports = {
       tokenString += `[**${symbol}**](https://solscan.io/account/${mint})\n**Balance**: ${amount}\n\n`;
     });
 
-    await interaction.channel.send({
+    await interaction.followUp({
+      ephemeral: true,
       content: "Done! " + `<@${interaction.user.id}>`,
       embeds: [
         new EmbedBuilder()
           .setTitle("This is your betting wallet")
           .setColor(COLORS.default)
           .setDescription("```" + wallet.publicKey + "```" + "\n" + tokenString)
-      ]
+      ],
     },
     )
   },

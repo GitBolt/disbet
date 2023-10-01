@@ -18,12 +18,12 @@ module.exports = {
                 custodial: false
             });
 
-            await interaction.reply(`Switched to **non-custodial** wallet`)
+            await interaction.reply({content: `Switched to **non-custodial** wallet`, ephemeral: true})
         } else {
             await Wallet.updateOne({ discord_id: interaction.user.id }, {
                 custodial: true
             });
-            await interaction.reply(`Switched to **custodial** wallet`)
+            await interaction.reply({content: `Switched to **custodial** wallet`, ephemeral: true})
         }
 
     },
