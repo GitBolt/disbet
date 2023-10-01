@@ -10,4 +10,4 @@
 
 DisBet is a Discord bot which enables on-chain betting on sports events using @MonacoProtocol. Using simple commands and clean embeds, it makes it super easy and quick to bet on events on-chain</br>
 
-> The project is created as a submission for [Solana Sandstorm Hackathon](https://sandstormhackathon.com)
+> 1st Prize Winner of [Solana Sandstorm Hackathon](https://sandstormhackathon.com) "Improving Sports Betting UX" track
