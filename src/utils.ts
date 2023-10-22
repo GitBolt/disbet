@@ -24,17 +24,16 @@ export const getKeyByValue = (object: any, value: any) => {
 }
 
 
-export const embedBuilder = async (embed: EmbedBuilder, interaction: ChatInputCommandInteraction, marketsWithOutcomes: any[], row, page: number) => {
+export const embedBuilder = async (interaction: ChatInputCommandInteraction, marketsWithOutcomes: any[], row, page: number, idx: { value: number }) => {
 
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
-    console.log("IN THE LOOP MARKET OUTCOMES: ", marketsWithOutcomes)
-
-
-    for (let i = 0; embed.data.fields ? embed.data.fields.length <= 2 : i <= 2; i++) {
-
-
+    const newEmbed = new EmbedBuilder().setColor('#ff0062')
+    console.log("Current starting index: ", idx)
+    for (let i = idx.value; i < 100; i++) {
+        idx.value += 1
         let marketPk = marketsWithOutcomes[i].publicKey;
-        console.log("\n\n", "This is the raw market: ", marketsWithOutcomes[i])
+        // console.log("\n\n", "This is the raw market: ", marketsWithOutcomes[i])
+
         let marketPricesData = await getMarketOutcomePriceData(program, marketPk);
         if (!marketPricesData) {
             console.log("No data: ", marketPk.toBase58())
@@ -47,16 +46,15 @@ export const embedBuilder = async (embed: EmbedBuilder, interaction: ChatInputCo
         };
 
         const formattedString = `For Outcome Price: \`${marketData.prices.forOutcomePrice}\`\nTo Outcome Price: \`${marketData.prices.againstOutcomePrice}\`\nAddress: \`${marketData.pk}\`\n[View on Solscan](https://solscan.io/account/${marketData.pk})`;
-        embed.addFields(
+        newEmbed.addFields(
             {
                 name: `${marketData.prices.marketOutcome} vs ${marketData.prices.marketOutcomeAgainst}`,
                 value: formattedString
             }
         )
+        let newData = { embeds: [newEmbed], content: `Page: ${page}\nFetching more...`, }
 
-        let newData = { embeds: [embed], content: `Page: ${page}\nFetching more...`, }
-
-        if (embed.data.fields.length == 3) {
+        if (newEmbed.data.fields.length == 3) {
             newData["components"] = [row]
             await interaction.editReply(newData);
             break
@@ -66,5 +64,5 @@ export const embedBuilder = async (embed: EmbedBuilder, interaction: ChatInputCo
 
 
     }
-    return embed
+    return newEmbed
 }

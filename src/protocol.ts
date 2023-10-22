@@ -72,10 +72,10 @@ export const getMarketOutcomePriceData = async (
     marketPk: PublicKey
 ) => {
 
-    console.log("Fetching market prices for ", marketPk.toBase58(), " ...")
+    // console.log("Fetching market prices for ", marketPk.toBase58(), " ...")
     let marketPricesResponse: ClientResponse<MarketPricesAndPendingOrders> =
         await getMarketPrices(program, marketPk);
-    console.log("Market price response: ", marketPricesResponse)
+    // console.log("Market price response: ", marketPricesResponse)
 
     if (!marketPricesResponse.success || marketPricesResponse.data.pendingOrders.length == 0) {
         return null
@@ -131,12 +131,12 @@ export const getMarkets = async (token: string, interaction: ChatInputCommandInt
     }
     await interaction.editReply({ embeds: [embed], content: "Loading..." });
 
-    const embeds = []
+    const savedEmbeds = []
     let page = 1
+    let currentIndex = { value: 0 }
 
-    await embedBuilder(embed, interaction, marketsWithOutcomes, row, page)
-
-    embeds.push(embed)
+    let newEmbed = await embedBuilder(interaction, marketsWithOutcomes, row, page, currentIndex)
+    savedEmbeds.push(newEmbed)
 
     const collectorFilter = (i: Interaction) => i.user.id === interaction.user.id;
     try {
@@ -144,25 +144,26 @@ export const getMarkets = async (token: string, interaction: ChatInputCommandInt
 
         collector.on('collect', async (i) => {
             if (i.customId == "next") {
-                i.reply({ content: "Fetching next page...", ephemeral: true })
+                await i.reply({ content: "Fetching next page...", ephemeral: true })
                 page += 1
-                const newItems = marketsWithOutcomes.slice((page - 1) * 3, marketsWithOutcomes.length)
                 console.log("New page: ", page, "Total Length: ", marketsWithOutcomes.length, (page - 1) * 3, marketsWithOutcomes.length)
-                if (page > embeds.length) {
+                if (page > savedEmbeds.length) {
                     embed.setFields([])
-                    console.log(embed.data)
-                    const newEmbed = await embedBuilder(embed, interaction, newItems, row, page)
-                    embeds.push(newEmbed)
+                    newEmbed = await embedBuilder(interaction, marketsWithOutcomes, row, page, currentIndex)
+                    savedEmbeds.push(newEmbed)
                 } else {
-                    await interaction.editReply("Something is sus")
+                    await interaction.editReply({embeds: [savedEmbeds[page]], content: `Page: ${page}\n`,})
                 }
             } else if (i.customId == "prev") {
-                console.log("Prev page: ", page - 1, "EM l: ", embeds.length)
-                if ((page - 1) > embeds.length) {
-                    await interaction.followUp({ content: "You are going too much back! :)", ephemeral: true })
+                await i.reply({ content: "Fetching old page...", ephemeral: true })
+                console.log("Prev page: ", page - 1, "Length:  ", savedEmbeds.length)
+                console.log(page, savedEmbeds[page - 1])
+                if ((page - 1) <= 0) {
+                    await i.editReply({ content: "You can't go further back!" })
                 } else {
                     page -= 1
-                    await interaction.editReply({ content:`Page: ${page}`, embeds: [embeds[page-1]] })
+                    await interaction.editReply({ content: `Page: ${page}`, embeds: [savedEmbeds[page - 1]] })
+
                 }
 
             }
@@ -268,7 +269,7 @@ export const placeBet = async (
             stakeInteger
         );
 
-        console.log("Order Res: ", data)
+        // console.log("Order Res: ", data)
         return { data, marketPricesData }
     } catch (e: any) {
         console.log("Error creating order: ", e.errors.toString())
