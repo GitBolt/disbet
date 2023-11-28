@@ -20,10 +20,10 @@ module.exports = {
 
   async execute(interaction: ChatInputCommandInteraction) {
     let token = TOKENLIST["USDT"]
-    const category = interaction.options.getString("category")
+    const tokenGiven = interaction.options.getString("token")
     const sport = interaction.options.getString("sport")
-    if (category) {
-      token = category
+    if (token) {
+      token = tokenGiven
     }
     const tokenName = getKeyByValue(TOKENLIST, token)
     await interaction.reply(`Fetching latest **${tokenName}** market data ${EMOJIS.loading}`)

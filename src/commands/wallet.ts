@@ -14,6 +14,10 @@ module.exports = {
 
   async execute(interaction: ChatInputCommandInteraction) {
     const custodial = await isCustodial(interaction.user.id)
+    
+    if (typeof(custodial) == 'undefined') {
+      await interaction.reply("You need to create your wallet first! Use `/init`")
+    }
     if (!custodial) {
       await interaction.reply({ content: "Switch to custodial wallet to view its balance. Enter `/switch`", ephemeral: true })
       return

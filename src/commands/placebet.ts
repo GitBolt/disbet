@@ -73,7 +73,7 @@ module.exports = {
         stake_amount: args.getNumber("stake_amount", true), 
         type: args.getString("type", true).toUpperCase(), 
         market_address: args.getString('market_address', true),
-        user_id: user.id
+        wallet_id: user.id
       });
 
       await newBet.save();

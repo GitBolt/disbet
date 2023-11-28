@@ -40,7 +40,7 @@ const BetScheme = new mongoose.Schema({
         required: true,
         unique: false
     },
-    user_id: {
+    wallet_id: {
         type: String,
         required: true,
         unique: false

@@ -37,6 +37,7 @@ export const embedBuilder = async (interaction: ChatInputCommandInteraction, mar
 
         // let neaaawData = await getAllMarketMatchingPools(program, marketPk)
         // console.log(neaaawData)
+
         let marketPricesData = await getMarketOutcomePriceData(program, marketPk);
         if (!marketPricesData) {
             console.log("No data: ", marketPk.toBase58())
