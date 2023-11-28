@@ -15,8 +15,8 @@ export const COLORS: { [key: string]: ColorResolvable } = {
 export const TOKENLIST: {
     [key: string]: string
 } = {
-    USDC: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
     USDT: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    USDC: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
     UXD: '7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT',
     RAY: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
     SBR: 'Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1',
@@ -29,3 +29,17 @@ export const TOKENLIST: {
 }
 
 export const TOKENLISTURL = "https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json"
+
+export const SPORTS = [
+    "League of Legends",
+    "Ice Hockey",
+    "Football",
+    "Cricket",
+    "American Football",
+    "DOTA",
+    "Baseball",
+    "Basketball",
+    "Rugby",
+    "Tennis",
+    "Boxing"
+]

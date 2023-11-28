@@ -4,6 +4,7 @@ import { BN } from "@coral-xyz/anchor"
 import CustomWallet from "./wallet";
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { getMarketOutcomePriceData } from "./protocol";
+import { getAllMarketMatchingPools } from "@monaco-protocol/client";
 
 export async function getProgram(protocolAddress: PublicKey, sk?: Uint8Array) {
 
@@ -29,11 +30,13 @@ export const embedBuilder = async (interaction: ChatInputCommandInteraction, mar
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
     const newEmbed = new EmbedBuilder().setColor('#ff0062')
     console.log("Current starting index: ", idx)
-    for (let i = idx.value; i < 100; i++) {
-        idx.value += 1
-        let marketPk = marketsWithOutcomes[i].publicKey;
-        // console.log("\n\n", "This is the raw market: ", marketsWithOutcomes[i])
 
+    for (let i = 0; i < 100; i++) {
+        // idx.value += 1
+        let marketPk = marketsWithOutcomes[i];
+
+        // let neaaawData = await getAllMarketMatchingPools(program, marketPk)
+        // console.log(neaaawData)
         let marketPricesData = await getMarketOutcomePriceData(program, marketPk);
         if (!marketPricesData) {
             console.log("No data: ", marketPk.toBase58())
@@ -41,7 +44,6 @@ export const embedBuilder = async (interaction: ChatInputCommandInteraction, mar
         }
         const marketData = {
             pk: marketPk.toString(),
-            market: marketsWithOutcomes[i],
             prices: marketPricesData,
         };
 

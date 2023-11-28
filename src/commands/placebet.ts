@@ -5,6 +5,7 @@ import { askPassword } from '../utils/askPassword';
 import { isCustodial } from '../utils/isCustodial';
 import { sendPlaceBetURL } from '../network/getCustodialUrl';
 import { simpleErrors } from '../utils/simpleErrors';
+import { Bet, Wallet } from '../schema/wallet';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -65,6 +66,18 @@ module.exports = {
     }
 
     if (res.data.success) {
+
+      const user = await Wallet.findOne({ discord_id: interaction.user.id });
+
+      const newBet = new Bet({
+        stake_amount: args.getNumber("stake_amount", true), 
+        type: args.getString("type", true).toUpperCase(), 
+        market_address: args.getString('market_address', true),
+        user_id: user.id
+      });
+
+      await newBet.save();
+
       const embed = new EmbedBuilder()
         .setTitle(`Successfully Placed Bet`)
         .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
