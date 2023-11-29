@@ -66,7 +66,7 @@ module.exports = {
     }
 
     if (res.data.success) {
-
+      console.log(res)
       const user = await Wallet.findOne({ discord_id: interaction.user.id });
 
       const newBet = new Bet({
@@ -80,7 +80,7 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setTitle(`Successfully Placed Bet`)
-        .setURL(`https://solscan.io/tx/${res.data.tnxID}`)
+        .setURL(`https://solscan.io/tx/${res.data.data.tnxID}`)
         .setColor(COLORS.success)
         .addFields(
           { name: "Event", value: `${res!.marketPricesData!.marketOutcome} * vs * ${res!.marketPricesData!.marketOutcomeAgainst}` },

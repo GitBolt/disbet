@@ -7,7 +7,10 @@ export const simpleErrors = (error: string) => {
     }
     else if (error.includes("Attempt to debit an account but found no record")) {
         return "You don't have enough SOL"
-    } else {
+    } else if (error.includes("decimal limit breached for market")) { 
+        return "Stake amount is too low"
+    }
+    else {
         return error
     }
 }
