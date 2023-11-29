@@ -64,7 +64,7 @@ module.exports = {
     console.log(betDetails)
     const embed = new EmbedBuilder()
       .setTitle("Snipe Bet")
-      .setDescription(`Stake: \`${parseProtocolNumber(betDetails.account.stake)}\`\nOdds: \`${betDetails.account.expectedPrice}\`\nUnmatched Stake: \`${parseProtocolNumber(betDetails.account.stakeUnmatched)}\`\nAddress: \`${betDetails.publicKey.toBase58()}\`\n[View on Solscan](https://solscan.io/account/${betDetails.publicKey.toBase58()})`)
+      .setDescription(`Stake: \`${betDetails.account.stake / 1000000}\`\nOdds: \`${betDetails.account.expectedPrice}\`\nUnmatched Stake: \`${betDetails.account.stakeUnmatched / 1000000}\`\nAddress: \`${betDetails.publicKey.toBase58()}\`\n[View on Solscan](https://solscan.io/account/${betDetails.publicKey.toBase58()})`)
       .setColor(COLORS.default)
 
     if (!accs.length) {
@@ -93,7 +93,7 @@ module.exports = {
         if (i.customId == "copy") {
           const outcome = betDetails.account.forOutcome ? "for" : "against"
           const betAddress = betDetails.publicKey.toBase58()
-          const stake = parseProtocolNumber(betDetails.account.stake)
+          const stake = betDetails.account.stake / 1000000
 
           console.log(outcome, betAddress, stake)
 

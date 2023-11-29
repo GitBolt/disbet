@@ -37,7 +37,7 @@ module.exports = {
       return
     }
 
-    await interaction.reply({content: "Fetching your bets...", ephemeral: true})
+    await interaction.reply({ content: "Fetching your bets...", ephemeral: true })
 
     const market_address = interaction.options.getString('market_address')
     const address = interaction.options.getString('address')
@@ -53,20 +53,19 @@ module.exports = {
 
       if (address) {
         betOrdersResponse = await new Orders(program)
-        .filterByPurchaser(new PublicKey(address as string))
-        .fetch();
+          .filterByPurchaser(new PublicKey(address as string))
+          .fetch();
       } else {
         betOrdersResponse = await new Orders(program)
-        .filterByPurchaser(new PublicKey(wallet!.publicKey as string))
-        .fetch();
+          .filterByPurchaser(new PublicKey(wallet!.publicKey as string))
+          .fetch();
       }
 
     }
 
     const accs = betOrdersResponse.data.orderAccounts
-
     const embed = new EmbedBuilder()
-      .setTitle("Your Bets")
+      .setTitle("Your Currently Active Bets")
       .setDescription(`These are your bets ${market_address ? `for account: \`\`\`${market_address}\`\`\`` : ''}`)
       .setColor(COLORS.default)
 
@@ -75,7 +74,8 @@ module.exports = {
     }
     embed.addFields(
       ...accs.map((acc) => {
-        const formattedString = `Stake: \`${parseProtocolNumber(acc.account.stake)}\`\nOdds: \`${acc.account.expectedPrice}\`\nUnmatched Stake: \`${parseProtocolNumber(acc.account.stakeUnmatched)}\`\nAddress: \`${acc.publicKey.toBase58()}\`\n[View on Solscan](https://solscan.io/account/${acc.publicKey.toBase58()})`;
+        console.log(acc.account.stake.toNumber())
+        const formattedString = `Stake: \`${acc.account.stake / 1000000}\`\nOdds: \`${acc.account.expectedPrice}\`\nUnmatched Stake: \`${acc.account.stakeUnmatched / 1000000}\`\nAddress: \`${acc.publicKey.toBase58()}\`\n[View on Solscan](https://solscan.io/account/${acc.publicKey.toBase58()})`;
         return {
           name: `Bet Type: ${acc.account.forOutcome ? "FOR" : "AGAINST"}`,
           value: formattedString
