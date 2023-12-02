@@ -19,13 +19,16 @@ module.exports = {
         .addChoices(...SPORTS.map(value => ({ name: value, value })))),
 
   async execute(interaction: ChatInputCommandInteraction) {
-    let token = TOKENLIST["USDT"]
+    let token = TOKENLIST["USDC"]
+
     const tokenGiven = interaction.options.getString("token")
     const sport = interaction.options.getString("sport")
-    if (token) {
+
+    if (tokenGiven) {
       token = tokenGiven
     }
     const tokenName = getKeyByValue(TOKENLIST, token)
+
     await interaction.reply(`Fetching latest **${tokenName}** market data ${EMOJIS.loading}`)
     await getMarkets(token, sport, interaction)
   },

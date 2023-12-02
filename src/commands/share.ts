@@ -44,6 +44,9 @@ module.exports = {
 
     await interaction.reply({ content: "Sharing your bet...", ephemeral: true })
 
+
+    const custodial = await isCustodial(interaction.user.id)
+
     const bet_address = interaction.options.getString('bet_address')
     const address = interaction.options.getString('address')
     const program = await getProgram(new PublicKey('monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih'));
@@ -102,7 +105,7 @@ module.exports = {
             const res = await sendPlaceBetURL(
               betDetails.publicKey.toBase58(),
               betDetails.account.forOutcome ? "for" : "against",
-              parseProtocolNumber(betDetails.account.stake),
+              betDetails.account.stake / 1000000,
             )
             await interaction.channel.send({ content: `Head over to [this link](${res}) and sign the transaction using your browser wallet! <@${i.user.id}>` })
             return

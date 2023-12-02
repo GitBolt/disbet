@@ -10,6 +10,10 @@ module.exports = {
     .setName('history')
     .setDescription('Returns your betting history')
 
+    .addStringOption((option: any) =>
+      option.setName('address')
+        .setDescription('Non-custodial wallet')
+        .setRequired(false))
   ,
 
   async execute(interaction: ChatInputCommandInteraction) {
@@ -30,15 +34,15 @@ module.exports = {
     }
 
     const betsPerPage = 10;
-    await sendBettingHistory(interaction, wallet.id, 0, betsPerPage);
+    await sendBettingHistory(interaction, interaction.options.getString("address") || wallet.publicKey, 0, betsPerPage);
   }
 }
 
 
-async function sendBettingHistory(interaction, walletId, page, betsPerPage) {
-  const totalBets = await Bet.countDocuments({ user_id: walletId });
+async function sendBettingHistory(interaction, publicKey, page, betsPerPage) {
+  const totalBets = await Bet.countDocuments({ publicKey });
 
-  const bets = await Bet.find({ user_id: walletId })
+  const bets = await Bet.find({ publicKey })
     .skip(page * betsPerPage)
     .limit(betsPerPage);
 
@@ -58,7 +62,7 @@ async function sendBettingHistory(interaction, walletId, page, betsPerPage) {
         name: `Bet Type: ${bet.type}`,
         value: `Stake: \`${bet.stake_amount}\`\n` +
           `Date: <t:${Math.floor(bet.date_added.getTime() / 1000)}:f>\n` +
-          `Market Address: \`${bet.market_address}\`` 
+          `Market Address: \`${bet.market_address}\``
       }))
     );
   }
@@ -92,12 +96,13 @@ async function sendBettingHistory(interaction, walletId, page, betsPerPage) {
   const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
 
   collector.on('collect', async i => {
+    console.log(1)
     if (i.customId === 'next_page') {
       page++;
     } else if (i.customId === 'previous_page') {
       page--;
     }
-    await sendBettingHistory(interaction, walletId, page, betsPerPage);
+    await sendBettingHistory(interaction, publicKey, page, betsPerPage);
     await i.deferUpdate();
   });
 }
