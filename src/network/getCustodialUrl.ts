@@ -1,14 +1,16 @@
 export const sendPlaceBetURL = async (
     marketPk: string,
     type: "for" | "against",
-    amount: number
+    amount: number,
+    id: string,
 ) => {
 
     const data = {
         marketPk,
         type,
         amount,
-        transaction_type: "placeBet"
+        transaction_type: "placeBet",
+        id
     }
 
     const encoded = Buffer.from(JSON.stringify(data)).toString('base64')
@@ -29,3 +31,4 @@ export const cancelBetURL = async (
 
     return "https://disbet.vercel.app/sign/"  + encoded
 }
+

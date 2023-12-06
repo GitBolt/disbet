@@ -106,6 +106,7 @@ module.exports = {
               betDetails.publicKey.toBase58(),
               betDetails.account.forOutcome ? "for" : "against",
               betDetails.account.stake / 1000000,
+              interaction.user.id,
             )
             await interaction.channel.send({ content: `Head over to [this link](${res}) and sign the transaction using your browser wallet! <@${i.user.id}>` })
             return

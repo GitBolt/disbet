@@ -37,6 +37,7 @@ module.exports = {
         args.getString('market_address', true),
         args.getString("type", true) as "for" | "against",
         args.getNumber("stake_amount", true),
+        interaction.user.id,
       )
       await interaction.reply({ content: `Head over to [this link](${res}) and sign the transaction using your browser wallet!`, ephemeral: true })
       return
