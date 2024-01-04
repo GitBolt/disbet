@@ -31,8 +31,8 @@ export const embedBuilder = async (interaction: ChatInputCommandInteraction, mar
     const newEmbed = new EmbedBuilder().setColor('#ff0062')
     console.log("Current starting index: ", idx)
 
-    for (let i = 0; i < 100; i++) {
-        // idx.value += 1
+    for (let i = idx.value; i < 100; i++) {
+        idx.value += 1
         let marketPk = marketsWithOutcomes[i];
 
         // let neaaawData = await getAllMarketMatchingPools(program, marketPk)

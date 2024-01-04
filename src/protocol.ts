@@ -29,12 +29,12 @@ export async function getMarketPrices(
 ): Promise<ClientResponse<MarketPricesAndPendingOrders>> {
   const response = new ResponseFactory({} as MarketPricesAndPendingOrders);
 
-  console.log("Fetching pending orders...")
+  // console.log("Fetching pending orders...")
   const openOrdersResponse = await new Orders(program)
     .filterByMarket(marketPk)
     .filterByStatus(OrderStatusFilter.Open)
     .fetch()
-  console.log("Fetching market outcomes orders...")
+  // console.log("Fetching market outcomes orders...")
   const marketOutcomes = await MarketOutcomes.marketOutcomeQuery(program)
     .filterByMarket(marketPk)
     .fetch();
@@ -149,24 +149,25 @@ export const getMarkets = async (token: string, sport: string, interaction: Chat
 
     collector.on('collect', async (i) => {
       if (i.customId == "next") {
-        await i.reply({ content: "Fetching next page...", ephemeral: true })
         page += 1
-        console.log("New page: ", page, "Total Length: ", marketAccounts.length, (page - 1) * 3, marketAccounts.length)
         if (page > savedEmbeds.length) {
+          await i.reply({ content: "Fetching next page...", ephemeral: true })
+          console.log("New page fetch: ", page, "Embed Array Length: ", savedEmbeds.length)
           embed.setFields([])
           newEmbed = await embedBuilder(interaction, marketAccounts, row, page, currentIndex)
           savedEmbeds.push(newEmbed)
         } else {
-          await interaction.editReply({ embeds: [savedEmbeds[page]], content: `Page: ${page}\n`, })
+          await i.deferUpdate()
+          console.log("New page already: ", page, "Embed Array Length: ", savedEmbeds.length)
+          await interaction.editReply({ embeds: [savedEmbeds[page - 1]], content: `Page: ${page}\n`, })
         }
       } else if (i.customId == "prev") {
-        await i.reply({ content: "Fetching old page...", ephemeral: true })
-        console.log("Prev page: ", page - 1, "Length:  ", savedEmbeds.length)
-        console.log(page, savedEmbeds[page - 1])
+        await i.deferUpdate()
         if ((page - 1) <= 0) {
           await i.editReply({ content: "You can't go further back!" })
         } else {
           page -= 1
+          console.log("Prev page: ", page, "Embed Array Length:  ", savedEmbeds.length)
           await interaction.editReply({ content: `Page: ${page}`, embeds: [savedEmbeds[page - 1]] })
 
         }
